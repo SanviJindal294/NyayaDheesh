@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lawyer Profile — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <style>
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .profile-avatar-lg {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--navy); color: var(--gold);
+      font-family: var(--font-heading); font-size: 26px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .slot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 0 16px; }
+    .slot-btn {
+      padding: 9px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--navy);
+      font-weight: 600; font-size: 13px;
+      cursor: pointer;
+    }
+    .slot-btn.active { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
+    .slot-btn:disabled { background: var(--surface-muted); color: #94A3B8; text-decoration: line-through; cursor: not-allowed; }
+    @media (max-width: 900px) { .profile-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div id="bc"></div>
+        <div id="heroContent"></div>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container" id="profileBody"></div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('lawyers');
+    const id = new URLSearchParams(location.search).get('id') || 'LAW-001';
+    const lawyer = NDStore.LawyerService.getById(id) || NDStore.LawyerService.listAll()[0];
+
+    document.title = `${lawyer.name} — NyayaDheesh`;
+    document.getElementById('bc').innerHTML = NDUI.renderBreadcrumbs([
+      { label: 'Home', href: 'index.html' },
+      { label: 'Find Lawyers', href: 'lawyers.html' },
+      { label: lawyer.name }
+    ]);
+
+    function renderHero() {
+      const saved = NDStore.LawyerService.getSavedIds().includes(lawyer.id);
+      document.getElementById('heroContent').innerHTML = `
+        <div class="flex justify-between items-center flex-wrap gap-4">
+          <div class="flex items-center gap-4">
+            <div class="profile-avatar-lg">${NDUI.esc(lawyer.initials)}</div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap mb-2">
+                <span class="badge badge-demo">Verified Advocate</span>
+                <span class="badge badge-navy">${NDUI.esc(lawyer.availability)}</span>
+              </div>
+              <h1 style="margin:0 0 4px;">${NDUI.esc(lawyer.name)}</h1>
+              <p class="mb-0">${NDUI.esc(lawyer.primaryArea)} · ${NDUI.esc(lawyer.city)} (PIN ${NDUI.esc(lawyer.pincode)})</p>
+            </div>
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline" id="saveProfileBtn">
+              ${ndIcon(saved ? 'bookmark-filled' : 'bookmark', 16)} ${saved ? 'Saved' : 'Save Profile'}
+            </button>
+            <button type="button" class="btn btn-outline" id="demoContactBtn">${ndIcon('mail', 16)} Send Inquiry</button>
+            <a href="booking.html?lawyer=${encodeURIComponent(lawyer.id)}" class="btn btn-primary">${ndIcon('calendar', 16)} Book Consultation</a>
+          </div>
+        </div>
+      `;
+      document.getElementById('saveProfileBtn').onclick = () => {
+        const nowSaved = NDStore.LawyerService.toggleSaved(lawyer.id);
+        NDUI.toast(nowSaved ? 'Saved to your Dashboard.' : 'Removed from Saved Lawyers.', 'info');
+        renderHero();
+      };
+      document.getElementById('demoContactBtn').onclick = () => {
+        const bd = NDUI.openModal({
+          title: `Send Inquiry to ${lawyer.name}`,
+          bodyHtml: `
+            <p class="text-sm mb-4">Share a brief pre-consultation note with ${NDUI.esc(lawyer.name)}.</p>
+            <form id="profMsgForm">
+              <div class="form-group"><label class="form-label">Your Name</label><input class="form-control" id="pmName" value="${NDUI.esc(NDStore.AuthService.getSession()?.name || 'Aarav Mehta')}" required></div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="pmEmail" type="email" value="${NDUI.esc(NDStore.AuthService.getSession()?.email || 'aarav.mehta@nyayadheesh.in')}" required></div>
+              <div class="form-group"><label class="form-label">Question / Topic</label><textarea class="form-textarea" id="pmMsg" required placeholder="Briefly share your pre-consultation question..."></textarea></div>
+              <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+            </form>
+          `
+        });
+        bd.querySelector('#profMsgForm').onsubmit = (e) => {
+          e.preventDefault();
+          try {
+            NDStore.ContactService.submit({
+              name: bd.querySelector('#pmName').value,
+              email: bd.querySelector('#pmEmail').value,
+              category: `Profile Inquiry (${lawyer.name})`,
+              message: bd.querySelector('#pmMsg').value
+            });
+            NDUI.closeModal();
+            NDUI.toast(`Inquiry sent to ${lawyer.name}.`, 'success');
+          } catch (err) { NDUI.toast(err.message, 'error'); }
+        };
+      };
+    }
+
+    let chosenDate = NDSeed.isoDay(2);
+    let chosenSlot = '';
+    let chosenMode = lawyer.modes[0];
+
+    function renderBody() {
+      const booked = NDStore.AppointmentService.getBookedSlots(lawyer.id, chosenDate);
+      document.getElementById('profileBody').innerHTML = `
+        <div class="disclaimer-box mb-6">
+          ${ndIcon('shield', 18)}
+          <div><strong>Consultation Notice:</strong> Initial consultations focus on document review, procedural orientation, and dispute strategy planning.</div>
+        </div>
+
+        <div class="profile-layout">
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="card">
+              <h3>Professional Biography</h3>
+              <p class="mb-0">${NDUI.esc(lawyer.bio)}</p>
+            </div>
+
+            <div class="card">
+              <h3>Practice Areas &amp; Background</h3>
+              <div class="flex gap-2 flex-wrap mb-4">
+                ${lawyer.practiceAreas.map(a => `<span class="badge badge-navy" style="padding:5px 12px;">${NDUI.esc(a)}</span>`).join('')}
+              </div>
+              <div class="grid-2" style="gap:16px;">
+                <div>
+                  <h4>${ndIcon('graduation-cap', 15)} Education</h4>
+                  <p class="text-sm mb-0">${NDUI.esc(lawyer.education)}</p>
+                </div>
+                <div>
+                  <h4>${ndIcon('briefcase', 15)} Experience</h4>
+                  <p class="text-sm mb-0">${lawyer.experience} years in civil, advisory &amp; dispute workflows</p>
+                </div>
+                <div>
+                  <h4>${ndIcon('globe', 15)} Languages Spoken</h4>
+                  <p class="text-sm mb-0">${NDUI.esc(lawyer.languages.join(', '))}</p>
+                </div>
+                <div>
+                  <h4>${ndIcon('calendar', 15)} Consultation Modes</h4>
+                  <p class="text-sm mb-0">${NDUI.esc(lawyer.modes.join(' · '))}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Weekly Availability</h3>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th>Days</th><th>Consultation Hours</th></tr></thead>
+                  <tbody>
+                    ${lawyer.weeklySchedule.map(w => `<tr><td><strong>${NDUI.esc(w.day)}</strong></td><td>${NDUI.esc(w.hours)}</td></tr>`).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <aside class="card" style="position:sticky;top:calc(var(--nav-height) + 18px);">
+            <div class="flex justify-between items-center mb-3">
+              <h3 style="margin:0;">Quick Slot Selection</h3>
+              <strong style="color:var(--navy);font-size:1.15rem;">₹${lawyer.fee.toLocaleString('en-IN')}</strong>
+            </div>
+            <p class="text-xs text-muted mb-4">Consultation fee per 45-minute session.</p>
+
+            <div class="form-group">
+              <label class="form-label" for="qpMode">Consultation Mode</label>
+              <select class="form-select" id="qpMode">
+                ${lawyer.modes.map(m => `<option value="${NDUI.esc(m)}" ${m === chosenMode ? 'selected' : ''}>${NDUI.esc(m)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="qpDate">Select Date</label>
+              <input class="form-control" id="qpDate" type="date" value="${NDUI.esc(chosenDate)}" min="${NDSeed.isoDay(1)}">
+            </div>
+
+            <div class="form-label">Available Time Slots (IST)</div>
+            <div class="slot-grid">
+              ${lawyer.slots.map(s => {
+                const taken = booked.includes(s);
+                return `<button type="button" class="slot-btn ${chosenSlot === s && !taken ? 'active' : ''}" data-slot="${NDUI.esc(s)}" ${taken ? 'disabled' : ''}>${NDUI.esc(s)}${taken ? ' (Booked)' : ''}</button>`;
+              }).join('')}
+            </div>
+
+            <button type="button" class="btn btn-primary btn-block" id="proceedBookBtn">Continue to Booking</button>
+            <p class="text-xs text-muted mt-2 mb-0" style="text-align:center;">Duplicate slots are blocked automatically.</p>
+          </aside>
+        </div>
+      `;
+
+      document.getElementById('qpMode').onchange = (e) => { chosenMode = e.target.value; };
+      document.getElementById('qpDate').onchange = (e) => { chosenDate = e.target.value; chosenSlot = ''; renderBody(); };
+      document.querySelectorAll('.slot-btn:not(:disabled)').forEach(btn => {
+        btn.onclick = () => { chosenSlot = btn.dataset.slot; renderBody(); };
+      });
+      document.getElementById('proceedBookBtn').onclick = () => {
+        const slot = chosenSlot || lawyer.slots.find(s => !booked.includes(s)) || '';
+        const q = new URLSearchParams({ lawyer: lawyer.id, mode: chosenMode, date: chosenDate, slot });
+        location.href = 'booking.html?' + q.toString();
+      };
+    }
+
+    renderHero();
+    renderBody();
+  </script>
+</body>
+</html>

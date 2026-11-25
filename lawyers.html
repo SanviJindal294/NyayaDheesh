@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Lawyers — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <style>
+    .dir-layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+    .filter-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: sticky;
+      top: calc(var(--nav-height) + 18px);
+    }
+    .results-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .lawyer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .lawyer-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .lc-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--navy); color: var(--gold);
+      font-weight: 700; font-size: 16px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .lc-meta {
+      display: grid;
+      gap: 6px;
+      margin: 14px 0;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+    }
+    .lc-meta span { display: inline-flex; align-items: center; gap: 7px; }
+    .lc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .lc-foot {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+    .mobile-filter-trigger { display: none; }
+    @media (max-width: 1080px) {
+      .lawyer-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .dir-layout { grid-template-columns: 1fr; }
+      .filter-panel { display: none; }
+      .mobile-filter-trigger { display: inline-flex; }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div id="bc"></div>
+        <div class="flex justify-between items-center flex-wrap gap-4">
+          <div>
+            <span class="eyebrow">Advocate Directory</span>
+            <h1>Find Lawyers Across Major Indian Cities</h1>
+            <p>Search and filter 108 advocate profiles by city, pincode, specialization, experience, language, fee, mode, and availability.</p>
+          </div>
+          <span class="badge badge-demo" style="padding:6px 14px;">108 Advocates · 12 Cities</span>
+        </div>
+
+        <div class="mt-4 flex gap-3 flex-wrap">
+          <div class="input-with-icon" style="flex:1;min-width:240px;">
+            <span class="input-icon" id="searchIcon"></span>
+            <input type="search" id="searchInput" class="form-control" placeholder="Search by lawyer name, practice area, city, pincode, or language...">
+          </div>
+          <button type="button" class="btn btn-outline" id="locBtn">Use My Location</button>
+          <button type="button" class="btn btn-outline mobile-filter-trigger" id="mobileFilterBtn">Filters</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="disclaimer-box mb-6">
+          <span id="dirWarnIcon"></span>
+          <div>
+            <strong>Directory Guidance:</strong> Filter advocates by practice area, city, pincode, language, and consultation fee, then compare profiles or book an available slot directly.
+          </div>
+        </div>
+
+        <div class="dir-layout">
+          <aside class="filter-panel" id="desktopFilterHost" aria-label="Directory filters"></aside>
+
+          <div>
+            <div class="results-toolbar">
+              <div style="font-size:14px;color:var(--navy);font-weight:600;" id="resultCount">Loading profiles...</div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <label class="text-xs text-muted" for="sortSelect" style="font-weight:600;">Sort by:</label>
+                <select id="sortSelect" class="form-select" style="width:auto;padding:7px 12px;">
+                  <option value="experience_desc">Experience: High to Low</option>
+                  <option value="fee_asc">Consultation Fee: Low to High</option>
+                  <option value="fee_desc">Consultation Fee: High to Low</option>
+                  <option value="availability">Earliest Availability</option>
+                  <option value="name_asc">Name: A to Z</option>
+                  <option value="distance" id="distOpt" disabled>Nearest Distance (Set Location)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="lawyer-grid" id="lawyerGrid"></div>
+            <div id="paginationHost"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Filter Drawer -->
+  <div class="drawer-backdrop" id="filterBackdrop"></div>
+  <aside class="drawer left" id="filterDrawer" aria-label="Filter lawyers">
+    <div class="drawer-header">
+      <h3 style="margin:0;">Filter Lawyers</h3>
+      <button type="button" class="icon-btn" id="closeFilterDrawer" aria-label="Close filters"></button>
+    </div>
+    <div class="drawer-body" id="mobileFilterHost"></div>
+  </aside>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('lawyers');
+    document.getElementById('bc').innerHTML = NDUI.renderBreadcrumbs([{ label: 'Home', href: 'index.html' }, { label: 'Find Lawyers' }]);
+    document.getElementById('searchIcon').innerHTML = ndIcon('search', 17);
+    document.getElementById('dirWarnIcon').innerHTML = ndIcon('info', 18);
+    document.getElementById('locBtn').innerHTML = ndIcon('map-pin', 15) + ' Use My Location';
+    document.getElementById('mobileFilterBtn').innerHTML = ndIcon('filter', 15) + ' Filters';
+    document.getElementById('closeFilterDrawer').innerHTML = ndIcon('x', 18);
+
+    const allLawyers = NDStore.LawyerService.listAll();
+    const allLangs = [...new Set(allLawyers.flatMap(l => l.languages))].sort();
+
+    const filters = {
+      search: '',
+      city: '',
+      pincode: '',
+      area: '',
+      minExp: 0,
+      language: '',
+      maxFee: 0,
+      mode: '',
+      availability: '',
+      sort: 'experience_desc',
+      userCoords: null,
+      page: 1
+    };
+
+    const urlParams = new URLSearchParams(location.search);
+    if (urlParams.get('area')) filters.area = urlParams.get('area');
+    if (urlParams.get('city')) filters.city = urlParams.get('city');
+    if (urlParams.get('q')) {
+      filters.search = urlParams.get('q');
+      document.getElementById('searchInput').value = filters.search;
+    }
+
+    function buildFilterMarkup(prefix) {
+      return `
+        <div class="flex justify-between items-center mb-4">
+          <h3 style="margin:0;font-size:1.1rem;">Filters</h3>
+          <button type="button" class="btn btn-ghost btn-sm" data-reset-filters>Reset All</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="${prefix}City">City</label>
+          <select class="form-select" id="${prefix}City" data-f="city">
+            <option value="">All Cities (12)</option>
+            ${NDSeed.CITIES.map(c => `<option value="${NDUI.esc(c.name)}">${NDUI.esc(c.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="${prefix}Pin">Pincode</label>
+          <input class="form-control" id="${prefix}Pin" data-f="pincode" placeholder="e.g. 1100" maxlength="6">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="${prefix}Area">Practice Area</label>
+          <select class="form-select" id="${prefix}Area" data-f="area">
+            <option value="">All Practice Areas</option>
+            ${NDSeed.PRACTICE_AREAS.map(a => `<option value="${NDUI.esc(a)}">${NDUI.esc(a)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="${prefix}Exp">Minimum Experience</label>
+          <select class="form-select" id="${prefix}Exp" data-f="minExp">
+            <option value="0">Any Experience</option>
+            <option value="5">5+ years</option>
+            <option value="10">10+ years</option>
+            <option value="15">15+ years</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="${prefix}Lang">Language</label>
+          <select class="form-select" id="${prefix}Lang" data-f="language">
+            <option value="">Any Language</option>
+            ${allLangs.map(l => `<option value="${NDUI.esc(l)}">${NDUI.esc(l)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="${prefix}Fee">Max Consultation Fee</label>
+          <select class="form-select" id="${prefix}Fee" data-f="maxFee">
+            <option value="0">Any Fee</option>
+            <option value="1000">Up to ₹1,000</option>
+            <option value="1800">Up to ₹1,800</option>
+            <option value="2500">Up to ₹2,500</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="${prefix}Mode">Consultation Mode</label>
+          <select class="form-select" id="${prefix}Mode" data-f="mode">
+            <option value="">Any Mode</option>
+            <option value="Video">Video Consultation</option>
+            <option value="Phone">Phone Consultation</option>
+            <option value="In-Person">In-Person Consultation</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="${prefix}Avail">Availability</label>
+          <select class="form-select" id="${prefix}Avail" data-f="availability">
+            <option value="">Any Availability</option>
+            <option value="Today">Available Today</option>
+            <option value="Tomorrow">Available Tomorrow</option>
+            <option value="This Week">Available This Week</option>
+          </select>
+        </div>
+      `;
+    }
+
+    document.getElementById('desktopFilterHost').innerHTML = buildFilterMarkup('d');
+    document.getElementById('mobileFilterHost').innerHTML = buildFilterMarkup('m');
+
+    function syncFilterInputs() {
+      document.querySelectorAll('[data-f]').forEach(el => {
+        el.value = String(filters[el.dataset.f] ?? '');
+      });
+    }
+
+    function wireFilters(root) {
+      root.querySelectorAll('[data-f]').forEach(el => {
+        el.addEventListener('input', () => {
+          const k = el.dataset.f;
+          filters[k] = (k === 'minExp' || k === 'maxFee') ? Number(el.value) : el.value;
+          filters.page = 1;
+          syncFilterInputs();
+          renderResults();
+        });
+      });
+      root.querySelectorAll('[data-reset-filters]').forEach(btn => {
+        btn.onclick = () => {
+          Object.assign(filters, { search: '', city: '', pincode: '', area: '', minExp: 0, language: '', maxFee: 0, mode: '', availability: '', page: 1 });
+          document.getElementById('searchInput').value = '';
+          syncFilterInputs();
+          renderResults();
+        };
+      });
+    }
+    wireFilters(document.getElementById('desktopFilterHost'));
+    wireFilters(document.getElementById('mobileFilterHost'));
+    syncFilterInputs();
+
+    // Mobile drawer toggle
+    const fDrawer = document.getElementById('filterDrawer');
+    const fBackdrop = document.getElementById('filterBackdrop');
+    const setFilterDrawer = (open) => { fDrawer.classList.toggle('open', open); fBackdrop.classList.toggle('open', open); };
+    document.getElementById('mobileFilterBtn').onclick = () => setFilterDrawer(true);
+    document.getElementById('closeFilterDrawer').onclick = () => setFilterDrawer(false);
+    fBackdrop.onclick = () => setFilterDrawer(false);
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      filters.search = e.target.value;
+      filters.page = 1;
+      renderResults();
+    });
+    document.getElementById('sortSelect').addEventListener('change', (e) => {
+      filters.sort = e.target.value;
+      filters.page = 1;
+      renderResults();
+    });
+
+    document.getElementById('locBtn').onclick = () => {
+      if (!navigator.geolocation) {
+        NDUI.toast('Browser geolocation unavailable. Select a city filter instead.', 'info');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          filters.userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          const opt = document.getElementById('distOpt');
+          opt.disabled = false;
+          opt.textContent = 'Nearest Distance';
+          document.getElementById('sortSelect').value = 'distance';
+          filters.sort = 'distance';
+          filters.page = 1;
+          NDUI.toast('Location enabled — sorting by approximate distance.', 'success');
+          renderResults();
+        },
+        () => NDUI.toast('Location access declined. You can filter by city or pincode.', 'info')
+      );
+    };
+
+    function renderResults() {
+      const res = NDStore.LawyerService.query(filters);
+      const savedSet = new Set(NDStore.LawyerService.getSavedIds());
+
+      document.getElementById('resultCount').textContent = `Showing ${res.items.length} of ${res.total} lawyer profiles (Page ${res.page} of ${res.totalPages})`;
+
+      const grid = document.getElementById('lawyerGrid');
+      if (!res.items.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1;">${NDUI.renderEmptyState({
+          icon: 'users',
+          title: 'No Matching Profiles',
+          description: 'Try broadening your filters, clearing the pincode, or resetting all filters.',
+          actionHtml: `<button type="button" class="btn btn-outline btn-sm" id="emptyResetBtn">Clear All Filters</button>`
+        })}</div>`;
+        document.getElementById('emptyResetBtn').onclick = () => document.querySelector('[data-reset-filters]').click();
+        document.getElementById('paginationHost').innerHTML = '';
+        return;
+      }
+
+      grid.innerHTML = res.items.map(l => {
+        const isSaved = savedSet.has(l.id);
+        return `
+          <article class="card card-hover lawyer-card">
+            <div class="flex justify-between items-center gap-2 mb-3">
+              <span class="badge badge-demo">Verified Advocate</span>
+              <div class="flex items-center gap-2">
+                <span class="badge ${l.availability === 'Today' ? 'badge-success' : 'badge-navy'}">${NDUI.esc(l.availability)}</span>
+                <button type="button" class="icon-btn" style="width:32px;height:32px;color:${isSaved ? 'var(--gold-dark)' : 'var(--text-secondary)'};" data-save="${NDUI.esc(l.id)}" aria-label="${isSaved ? 'Remove from saved lawyers' : 'Save lawyer'}" title="${isSaved ? 'Saved' : 'Save lawyer'}">
+                  ${ndIcon(isSaved ? 'bookmark-filled' : 'bookmark', 16)}
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="lc-avatar">${NDUI.esc(l.initials)}</div>
+              <div>
+                <h3 style="margin:0 0 2px;font-size:1.15rem;">${NDUI.esc(l.name)}</h3>
+                <div class="text-sm" style="color:var(--gold-dark);font-weight:600;">${NDUI.esc(l.primaryArea)}</div>
+              </div>
+            </div>
+
+            <div class="lc-meta">
+              <span>${ndIcon('map-pin', 14)} ${NDUI.esc(l.city)} · PIN ${NDUI.esc(l.pincode)}${l.distanceKm !== null ? ` · ~${l.distanceKm} km` : ''}</span>
+              <span>${ndIcon('briefcase', 14)} ${l.experience} years experience</span>
+              <span>${ndIcon('globe', 14)} ${NDUI.esc(l.languages.join(', '))}</span>
+              <span>${ndIcon('calendar', 14)} ₹${l.fee.toLocaleString('en-IN')} consultation fee</span>
+            </div>
+
+            <div class="lc-tags">
+              ${l.modes.map(m => `<span class="badge badge-navy">${NDUI.esc(m)}</span>`).join('')}
+            </div>
+
+            <div class="lc-foot">
+              <a href="lawyer-profile.html?id=${encodeURIComponent(l.id)}" class="btn btn-outline btn-sm" style="flex:1;">View Profile</a>
+              <a href="booking.html?lawyer=${encodeURIComponent(l.id)}" class="btn btn-primary btn-sm" style="flex:1;">Book Consultation</a>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('[data-save]').forEach(btn => {
+        btn.onclick = () => {
+          const saved = NDStore.LawyerService.toggleSaved(btn.dataset.save);
+          NDUI.toast(saved ? 'Lawyer profile saved to your Dashboard.' : 'Removed from Saved Lawyers.', 'info');
+          renderResults();
+        };
+      });
+
+      const pagHost = document.getElementById('paginationHost');
+      pagHost.innerHTML = NDUI.renderPagination({ page: res.page, totalPages: res.totalPages });
+      pagHost.querySelectorAll('[data-page]').forEach(btn => {
+        btn.onclick = () => {
+          const p = Number(btn.dataset.page);
+          if (p >= 1 && p <= res.totalPages) {
+            filters.page = p;
+            renderResults();
+            window.scrollTo({ top: 180, behavior: 'smooth' });
+          }
+        };
+      });
+    }
+
+    renderResults();
+  </script>
+</body>
+</html>

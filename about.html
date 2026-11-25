@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About NyayaDheesh — LegalTech Platform</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div id="bc"></div>
+        <span class="eyebrow">About NyayaDheesh</span>
+        <h1>Accessible Legal Clarity, Designed Responsibly</h1>
+        <p>
+          NyayaDheesh brings plain-language document comprehension, structured draft preparation, procedural guidance, lawyer discovery, and mediation workflows into one coherent LegalTech experience.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="grid-2" style="margin-bottom:32px;">
+          <div class="card">
+            <span class="eyebrow">Mission</span>
+            <h2>Demystifying Everyday Legal Workflows</h2>
+            <p class="mb-0">
+              Individuals and small businesses routinely encounter legal contracts, notices, tenancy disagreements, and consumer issues without knowing how to prepare. Our mission is to turn confusing legal paperwork into clear, structured steps so users arrive prepared when engaging qualified counsel.
+            </p>
+          </div>
+          <div class="card">
+            <span class="eyebrow">Vision</span>
+            <h2>A Clear Front Door to Informed Decisions</h2>
+            <p class="mb-0">
+              We envision a legal ecosystem where citizens can quickly inspect obligations, generate clean starting drafts, consider collaborative mediation early, and connect transparently with the right legal practitioner.
+            </p>
+          </div>
+        </div>
+
+        <div class="card mb-6">
+          <span class="eyebrow">Product Philosophy</span>
+          <h2>Four Principles Behind Every Screen</h2>
+          <div class="grid-2 mt-4">
+            <div>
+              <h4>1. Plain Language First</h4>
+              <p class="text-sm">Legal tools should clarify choices without overwhelming everyday users with unnecessary jargon.</p>
+            </div>
+            <div>
+              <h4>2. Honest Boundaries</h4>
+              <p class="text-sm">Informational software supports preparation—it never replaces licensed legal representation or fabricates court authorities.</p>
+            </div>
+            <div>
+              <h4>3. Collaborative Resolution</h4>
+              <p class="text-sm">Highlighting structured mediation alongside consultation helps parties evaluate practical, relationship-preserving options early.</p>
+            </div>
+            <div>
+              <h4>4. Production-Ready Modular Architecture</h4>
+              <p class="text-sm">UI components are cleanly decoupled from service layers so future verified backend APIs and authentication can plug in seamlessly.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-6">
+          <span class="eyebrow">How the Platform Works</span>
+          <h2>End-to-End Preparation &amp; Discovery</h2>
+          <div class="grid-3 mt-4">
+            <div>
+              <h4>Understand Documents</h4>
+              <p class="text-sm mb-0">Inspect clauses, dates, obligations, and potential discussion items locally in the Legal Document Analyzer.</p>
+            </div>
+            <div>
+              <h4>Draft &amp; Plan Next Steps</h4>
+              <p class="text-sm mb-0">Prepare starting templates in the Document Generator and organize checklists through Legal Next Steps and Case Exploration.</p>
+            </div>
+            <div>
+              <h4>Connect &amp; Track</h4>
+              <p class="text-sm mb-0">Filter lawyers and mediators by city and specialization, schedule appointments, and monitor everything inside your Client Dashboard.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="disclaimer-box">
+          <span id="safetyIcon"></span>
+          <div>
+            <strong>Legal Information Notice:</strong>
+            NyayaDheesh provides plain-language document comprehension, structured templates, and consultation scheduling tools. Informational outputs on this platform do not constitute formal legal advice; always consult a qualified advocate for binding legal representation.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('about');
+    document.getElementById('bc').innerHTML = NDUI.renderBreadcrumbs([{ label: 'Home', href: 'index.html' }, { label: 'About Us' }]);
+    document.getElementById('safetyIcon').innerHTML = ndIcon('shield-alert', 22);
+  </script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <style>
+    .auth-shell {
+      min-height: calc(100vh - 110px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .auth-brand-col {
+      background: var(--navy);
+      color: #E2E8F0;
+      padding: 48px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .auth-brand-col h1 { color: #FFFFFF; font-size: 2.25rem; margin-bottom: 12px; }
+    .auth-brand-col p { color: #CBD5E1; max-width: 460px; }
+    .demo-feed-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+      max-width: 460px;
+    }
+    .demo-cred-box {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(197, 164, 109, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+    }
+    .demo-cred-box code {
+      background: rgba(12, 23, 37, 0.65);
+      color: var(--gold);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 12.5px;
+    }
+    .auth-form-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 24px;
+      background: var(--ivory);
+    }
+    .auth-card { width: 100%; max-width: 470px; }
+    .auth-alert {
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .auth-alert.error { display: block; background: var(--error-bg); color: var(--error); border: 1px solid #FECACA; }
+    .auth-alert.success { display: block; background: var(--success-bg); color: var(--success); border: 1px solid #BBF7D0; }
+    .quick-demo-strip {
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-top: 16px;
+    }
+    @media (max-width: 900px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .auth-brand-col { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="auth-shell">
+    <section class="auth-brand-col">
+      <span class="eyebrow">Portal Access</span>
+      <h1>Choose Citizen or Lawyer Portal</h1>
+      <p>
+        Access both sides of NyayaDheesh seamlessly. Appointments booked from the Citizen portal appear live inside the Lawyer portal.
+      </p>
+
+      <div class="demo-feed-grid">
+        <div class="demo-cred-box">
+          <div class="flex justify-between items-center gap-2 mb-2">
+            <strong style="color:var(--gold);font-size:14px;display:inline-flex;align-items:center;gap:6px;" id="citLbl">Citizen Account</strong>
+            <span class="badge badge-demo">Client Portal</span>
+          </div>
+          <div class="text-xs" style="color:#E2E8F0;line-height:1.8;">
+            <div>Email: <code>aarav.mehta@nyayadheesh.in</code> · Pass: <code>ClientPass2026!</code></div>
+          </div>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <button type="button" class="btn btn-gold btn-sm" style="flex:1;" id="quickCitizenBtn">Citizen Login</button>
+            <button type="button" class="btn btn-outline btn-sm" style="background:transparent;color:#FFFFFF;border-color:rgba(255,255,255,0.3);" id="fillCitizenBtn">Autofill</button>
+          </div>
+        </div>
+
+        <div class="demo-cred-box">
+          <div class="flex justify-between items-center gap-2 mb-2">
+            <strong style="color:var(--gold);font-size:14px;display:inline-flex;align-items:center;gap:6px;" id="lawLbl">Lawyer Account</strong>
+            <span class="badge badge-demo">Advocate Portal</span>
+          </div>
+          <div class="text-xs" style="color:#E2E8F0;line-height:1.8;">
+            <div>Email: <code>advocate@nyayadheesh.in</code> · Pass: <code>AdvocatePass2026!</code></div>
+          </div>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <button type="button" class="btn btn-gold btn-sm" style="flex:1;" id="quickLawyerBtn">Lawyer Login</button>
+            <button type="button" class="btn btn-outline btn-sm" style="background:transparent;color:#FFFFFF;border-color:rgba(255,255,255,0.3);" id="fillLawyerBtn">Autofill</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-xs mt-4 mb-0" style="color:#94A3B8;max-width:460px;">
+        Encrypted local session handling — your workspace and preferences remain private in your browser.
+      </p>
+    </section>
+
+    <section class="auth-form-col">
+      <div class="card auth-card">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab-btn" data-mode="login">Login</button>
+          <button type="button" class="tab-btn" data-mode="register">Create Account</button>
+          <button type="button" class="tab-btn" data-mode="forgot">Forgot Password</button>
+          <button type="button" class="tab-btn" data-mode="reset">Reset Password</button>
+        </div>
+
+        <div id="authAlert" class="auth-alert" role="alert"></div>
+
+        <!-- Login -->
+        <form id="form-login" novalidate>
+          <h2 style="font-size:1.5rem;margin-bottom:4px;">Sign In</h2>
+          <p class="text-sm mb-4">Sign in with your email and password or choose a portal below.</p>
+          <div class="form-group">
+            <label class="form-label" for="lEmail">Email Address</label>
+            <input class="form-control" id="lEmail" type="email" value="aarav.mehta@nyayadheesh.in" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lPass">Password</label>
+            <div class="input-with-action">
+              <input class="form-control" id="lPass" type="password" value="ClientPass2026!" required>
+              <button type="button" class="input-action toggle-pw" data-target="lPass" aria-label="Toggle password visibility"></button>
+            </div>
+          </div>
+          <div class="flex justify-between items-center mb-4">
+            <span class="badge badge-demo">Secure Session</span>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="setMode('forgot')">Forgot password?</button>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Sign In</button>
+
+          <div class="quick-demo-strip">
+            <div class="text-xs text-muted mb-2" style="font-weight:600;text-align:center;">QUICK PORTAL ACCESS</div>
+            <div class="grid-2" style="gap:10px;">
+              <button type="button" class="btn btn-outline btn-sm" id="cardCitizenDemo">Citizen Portal</button>
+              <button type="button" class="btn btn-gold btn-sm" id="cardLawyerDemo">Lawyer Portal</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Register -->
+        <form id="form-register" style="display:none;" novalidate>
+          <h2 style="font-size:1.5rem;margin-bottom:4px;">Create Account</h2>
+          <p class="text-sm mb-4">Set up your NyayaDheesh profile to manage documents, consultations, and mediations.</p>
+          <div class="form-group">
+            <label class="form-label" for="rName">Full Name</label>
+            <input class="form-control" id="rName" required placeholder="e.g. Priya Nair">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="rEmail">Email Address</label>
+            <input class="form-control" id="rEmail" type="email" required placeholder="name@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="rCity">City</label>
+            <select class="form-select" id="rCity"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="rPass">Password (min 8 chars)</label>
+            <div class="input-with-action">
+              <input class="form-control" id="rPass" type="password" required placeholder="At least 8 characters">
+              <button type="button" class="input-action toggle-pw" data-target="rPass" aria-label="Toggle password visibility"></button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="regSubmit">Create Account</button>
+        </form>
+
+        <!-- Forgot Password -->
+        <form id="form-forgot" style="display:none;" novalidate>
+          <h2 style="font-size:1.5rem;margin-bottom:4px;">Forgot Password</h2>
+          <p class="text-sm mb-4">Generate a verification reset code to reset your account password.</p>
+          <div class="form-group">
+            <label class="form-label" for="fEmail">Registered Email</label>
+            <input class="form-control" id="fEmail" type="email" value="aarav.mehta@nyayadheesh.in" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Generate Reset Code</button>
+        </form>
+
+        <!-- Reset Password -->
+        <form id="form-reset" style="display:none;" novalidate>
+          <h2 style="font-size:1.5rem;margin-bottom:4px;">Reset Password</h2>
+          <p class="text-sm mb-4">Enter your reset code and choose a new password.</p>
+          <div class="form-group">
+            <label class="form-label" for="rsCode">Reset Code</label>
+            <input class="form-control" id="rsCode" required placeholder="e.g. ND-RST-XXXXX">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="rsPass">New Password (min 8 chars)</label>
+            <div class="input-with-action">
+              <input class="form-control" id="rsPass" type="password" required placeholder="New password">
+              <button type="button" class="input-action toggle-pw" data-target="rsPass" aria-label="Toggle password visibility"></button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Update Password</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('auth', { skipFooter: true });
+    document.getElementById('citLbl').innerHTML = ndIcon('user', 16) + ' Citizen Account';
+    document.getElementById('lawLbl').innerHTML = ndIcon('briefcase', 16) + ' Lawyer Account';
+    document.getElementById('cardCitizenDemo').innerHTML = ndIcon('user', 14) + ' Citizen Portal';
+    document.getElementById('cardLawyerDemo').innerHTML = ndIcon('briefcase', 14) + ' Lawyer Portal';
+    document.getElementById('rCity').innerHTML = NDSeed.CITIES.map(c => `<option value="${NDUI.esc(c.name)}">${NDUI.esc(c.name)}</option>`).join('');
+
+    const params = new URLSearchParams(location.search);
+    const rawNext = params.get('next');
+    const safeNext = rawNext && !/^https?:/i.test(rawNext) ? rawNext : '';
+
+    function destForRole(role) {
+      if (safeNext) return safeNext;
+      return role === 'lawyer' ? 'lawyerdash.html' : 'Dashboard.html';
+    }
+
+    function showAlert(msg, kind = 'error') {
+      const box = document.getElementById('authAlert');
+      box.className = 'auth-alert ' + kind;
+      box.textContent = msg;
+    }
+    function clearAlert() {
+      const box = document.getElementById('authAlert');
+      box.className = 'auth-alert';
+      box.textContent = '';
+    }
+
+    function setMode(mode) {
+      clearAlert();
+      const valid = ['login', 'register', 'forgot', 'reset'].includes(mode) ? mode : 'login';
+      document.querySelectorAll('.tab-btn[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === valid));
+      ['login', 'register', 'forgot', 'reset'].forEach(m => {
+        document.getElementById('form-' + m).style.display = m === valid ? 'block' : 'none';
+      });
+    }
+    document.querySelectorAll('.tab-btn[data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+    setMode(params.get('mode') || 'login');
+
+    document.querySelectorAll('.toggle-pw').forEach(btn => {
+      btn.innerHTML = ndIcon('eye', 17);
+      btn.onclick = () => {
+        const input = document.getElementById(btn.dataset.target);
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.innerHTML = ndIcon(show ? 'eye-off' : 'eye', 17);
+      };
+    });
+
+    function runDemoSignIn(role) {
+      const s = NDStore.AuthService.demoLogin(role);
+      NDUI.toast(`Signed in as ${s.name} (${role === 'lawyer' ? 'Lawyer' : 'Citizen'} Portal).`, 'success');
+      setTimeout(() => { location.href = role === 'lawyer' ? 'lawyerdash.html' : (safeNext || 'Dashboard.html'); }, 240);
+    }
+
+    document.getElementById('quickCitizenBtn').onclick = () => runDemoSignIn('client');
+    document.getElementById('cardCitizenDemo').onclick = () => runDemoSignIn('client');
+    document.getElementById('quickLawyerBtn').onclick = () => runDemoSignIn('lawyer');
+    document.getElementById('cardLawyerDemo').onclick = () => runDemoSignIn('lawyer');
+
+    document.getElementById('fillCitizenBtn').onclick = () => {
+      setMode('login');
+      document.getElementById('lEmail').value = 'aarav.mehta@nyayadheesh.in';
+      document.getElementById('lPass').value = 'ClientPass2026!';
+      NDUI.toast('Citizen credentials filled — click Sign In.', 'info');
+    };
+    document.getElementById('fillLawyerBtn').onclick = () => {
+      setMode('login');
+      document.getElementById('lEmail').value = 'advocate@nyayadheesh.in';
+      document.getElementById('lPass').value = 'AdvocatePass2026!';
+      NDUI.toast('Lawyer credentials filled — click Sign In.', 'info');
+    };
+
+    document.getElementById('form-login').onsubmit = (e) => {
+      e.preventDefault();
+      clearAlert();
+      const btn = document.getElementById('loginSubmit');
+      btn.disabled = true;
+      btn.textContent = 'Signing In...';
+      setTimeout(() => {
+        try {
+          const s = NDStore.AuthService.login({
+            email: document.getElementById('lEmail').value,
+            password: document.getElementById('lPass').value
+          });
+          NDUI.toast(`Welcome back, ${s.name}!`, 'success');
+          setTimeout(() => { location.href = destForRole(s.role); }, 240);
+        } catch (err) {
+          showAlert(err.message, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Sign In';
+        }
+      }, 220);
+    };
+
+    document.getElementById('form-register').onsubmit = (e) => {
+      e.preventDefault();
+      clearAlert();
+      const btn = document.getElementById('regSubmit');
+      btn.disabled = true;
+      btn.textContent = 'Creating Account...';
+      setTimeout(() => {
+        try {
+          NDStore.AuthService.register({
+            name: document.getElementById('rName').value,
+            email: document.getElementById('rEmail').value,
+            city: document.getElementById('rCity').value,
+            password: document.getElementById('rPass').value
+          });
+          NDUI.toast('Account created! Opening dashboard...', 'success');
+          setTimeout(() => { location.href = safeNext || 'Dashboard.html'; }, 260);
+        } catch (err) {
+          showAlert(err.message, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Create Account';
+        }
+      }, 220);
+    };
+
+    document.getElementById('form-forgot').onsubmit = (e) => {
+      e.preventDefault();
+      clearAlert();
+      try {
+        const res = NDStore.AuthService.requestPasswordReset(document.getElementById('fEmail').value);
+        document.getElementById('rsCode').value = res.resetToken;
+        setMode('reset');
+        showAlert(`Reset code generated: ${res.resetToken}. Enter a new password below.`, 'success');
+      } catch (err) {
+        showAlert(err.message, 'error');
+      }
+    };
+
+    document.getElementById('form-reset').onsubmit = (e) => {
+      e.preventDefault();
+      clearAlert();
+      try {
+        NDStore.AuthService.completePasswordReset({
+          token: document.getElementById('rsCode').value,
+          password: document.getElementById('rsPass').value
+        });
+        setMode('login');
+        showAlert('Password updated. You may now sign in.', 'success');
+      } catch (err) {
+        showAlert(err.message, 'error');
+      }
+    };
+  </script>
+</body>
+</html>

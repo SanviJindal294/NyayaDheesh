@@ -3,585 +3,877 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Dashboard | NyayaDheesh</title>
+  <title>Client Dashboard — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
   <style>
-    /* Earthy Color Palette */
-    :root {
-      --bg-dark: #121210;
-      --bg-darker: #0a0a08;
-      --bg-card: #1e1e1c;
-      --text-primary: #f0f0e0;
-      --text-secondary: #b0b0a0;
-      --accent-1: #D4A373; /* Earthy tan */
-      --accent-2: #CCD5AE; /* Soft green */
-      --accent-3: #E9EDC9; /* Light sage */
-      --accent-4: #FAEDCD; /* Warm vanilla */
-      --border: rgba(212, 163, 115, 0.3);
-    }
-
-    /* Reset & Base Styling */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      background: var(--bg-dark);
-      color: var(--text-primary);
-      font-family: 'Arial', sans-serif;
-      overflow-x: hidden;
-    }
-
-    /* Navbar Styles */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 5%;
-      background: rgba(10, 10, 8, 0.9);
-      backdrop-filter: blur(10px);
-      z-index: 100;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: 600;
-      background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      text-decoration: none;
-    }
-
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--bg-dark);
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      position: fixed;
-      left: 0;
-      top: 64px;
-      width: 240px;
-      height: calc(100vh - 64px);
-      background: var(--bg-darker);
-      padding: 20px 0;
-      border-right: 1px solid var(--border);
-      z-index: 90;
-    }
-
-    .sidebar-menu {
-      list-style: none;
-    }
-
-    .sidebar-menu li {
-      margin-bottom: 5px;
-    }
-
-    .sidebar-menu a {
-      display: flex;
-      align-items: center;
-      padding: 12px 20px;
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: all 0.3s;
-    }
-
-    .sidebar-menu a:hover, .sidebar-menu a.active {
-      background: rgba(212, 163, 115, 0.1);
-      color: var(--text-primary);
-      border-left: 3px solid var(--accent-1);
-    }
-
-    .sidebar-menu i {
-      margin-right: 12px;
-      font-size: 18px;
-      color: var(--accent-1);
-    }
-
-    /* Main Content */
-    .main-content {
-      margin-left: 240px;
-      margin-top: 64px;
-      padding: 30px;
-    }
-
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-
-    .page-title h1 {
-      font-size: 2rem;
-      background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .page-title p {
-      color: var(--text-secondary);
-    }
-
-    /* Stats Cards */
-    .stats-grid {
+    .dash-shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px 20px 56px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
     }
-
-    .stat-card {
-      background: var(--bg-card);
-      border-radius: 10px;
-      padding: 20px;
+    .dash-sidebar {
+      background: var(--surface);
       border: 1px solid var(--border);
-      transition: all 0.3s;
+      border-radius: var(--radius-lg);
+      padding: 16px 12px;
+      position: sticky;
+      top: calc(var(--nav-height) + 16px);
     }
-
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(212, 163, 115, 0.2);
-    }
-
-    .stat-card h3 {
-      font-size: 1rem;
-      color: var(--text-secondary);
+    .dash-user-card {
+      padding: 10px 12px 14px;
       margin-bottom: 10px;
-    }
-
-    .stat-card .value {
-      font-size: 2rem;
-      font-weight: 700;
-      background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    /* Recent Documents */
-    .documents-section {
-      background: var(--bg-card);
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 30px;
-      border: 1px solid var(--border);
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .section-header h2 {
-      font-size: 1.5rem;
-      background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .btn {
-      background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
-      color: var(--bg-dark);
-      border: none;
-      padding: 8px 20px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(212, 163, 115, 0.3);
-    }
-
-    .documents-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .documents-table th {
-      text-align: left;
-      padding: 12px 15px;
       border-bottom: 1px solid var(--border);
-      color: var(--accent-1);
-    }
-
-    .documents-table td {
-      padding: 12px 15px;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.1);
-    }
-
-    .documents-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .documents-table tr:hover {
-      background: rgba(212, 163, 115, 0.05);
-    }
-
-    .doc-type {
       display: flex;
       align-items: center;
-    }
-
-    .doc-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: rgba(212, 163, 115, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
-      color: var(--accent-1);
-    }
-
-    .doc-name {
-      font-weight: 500;
-    }
-
-    .doc-date {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-    }
-
-    .doc-actions {
-      display: flex;
       gap: 10px;
     }
-
-    .action-btn {
+    .dash-nav { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 3px; }
+    .dash-nav button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: var(--radius-md);
       background: transparent;
-      border: 1px solid var(--border);
-      color: var(--accent-1);
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .action-btn:hover {
-      background: rgba(212, 163, 115, 0.1);
-    }
-
-    /* Recent Activity */
-    .activity-list {
-      list-style: none;
-    }
-
-    .activity-item {
-      display: flex;
-      padding: 15px 0;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.1);
-    }
-
-    .activity-item:last-child {
-      border-bottom: none;
-    }
-
-    .activity-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(212, 163, 115, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 15px;
-      color: var(--accent-1);
-      flex-shrink: 0;
-    }
-
-    .activity-content {
-      flex-grow: 1;
-    }
-
-    .activity-title {
+      color: var(--text-secondary);
+      font-size: 13.5px;
       font-weight: 500;
-      margin-bottom: 5px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
     }
-
-    .activity-desc {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 5px;
+    .dash-nav button:hover { background: var(--ivory); color: var(--navy); }
+    .dash-nav button.active { background: var(--navy); color: #FFFFFF; font-weight: 600; }
+    .dash-nav .cnt {
+      margin-left: auto;
+      font-size: 11px;
+      padding: 1px 7px;
+      border-radius: 99px;
+      background: var(--gold-soft);
+      color: var(--navy);
+      font-weight: 700;
     }
+    .dash-nav button.active .cnt { background: var(--gold); color: var(--navy-deep); }
+    .dash-mobile-bar { display: none; margin-bottom: 16px; }
 
-    .activity-time {
-      color: var(--text-secondary);
-      opacity: 0.8;
-      font-size: 0.8rem;
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
     }
+    .kpi-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+    .kpi-val { font-family: var(--font-heading); font-size: 2rem; font-weight: 600; color: var(--navy); line-height: 1.1; }
 
-    /* Two Column Layout */
-    .two-column {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+    .mini-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+    .cal-hd { font-size: 11px; font-weight: 600; color: var(--text-secondary); padding: 4px 0; }
+    .cal-day {
+      padding: 7px 2px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: var(--text-primary);
+      position: relative;
     }
+    .cal-day.muted { color: #CBD5E1; }
+    .cal-day.today { background: var(--gold-soft); color: var(--navy); font-weight: 700; }
+    .cal-day.has-event { background: var(--navy); color: #FFFFFF; font-weight: 600; }
 
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .sidebar {
-        width: 200px;
-      }
-      .main-content {
-        margin-left: 200px;
-      }
-      .two-column {
-        grid-template-columns: 1fr;
-      }
-    }
+    .stage-mini { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 8px; }
+    .stage-mini span { font-size: 11px; padding: 3px 7px; border-radius: 4px; background: var(--surface-muted); color: var(--text-secondary); }
+    .stage-mini span.done { background: var(--success-bg); color: var(--success); }
+    .stage-mini span.cur { background: var(--navy); color: #FFFFFF; font-weight: 600; }
 
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-      }
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      .main-content {
-        margin-left: 0;
-      }
+    @media (max-width: 980px) {
+      .dash-shell { grid-template-columns: 1fr; }
+      .dash-sidebar { display: none; }
+      .dash-mobile-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <!-- Navbar -->
-  <nav>
-    <div class="logo">NyayaDheesh</div>
-    <div class="user-menu">
-      <div class="user-avatar">SR</div>
-    </div>
-  </nav>
+  <div id="site-header"></div>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <ul class="sidebar-menu">
-      <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-      <li><a href="#"><i class="fas fa-file-contract"></i> My Documents</a></li>
-      <li><a href="#"><i class="fas fa-handshake"></i> Mediation Cases</a></li>
-      <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
-      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-      <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
-      <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-    </ul>
-  </div>
+  <main>
+    <div class="dash-shell">
+      <aside class="dash-sidebar" id="desktopSidebar" aria-label="Dashboard navigation"></aside>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <div class="page-header">
-      <div class="page-title">
-        <h1>Welcome Back, Saiyam</h1>
-        <p>Here's what's happening with your legal matters</p>
-      </div>
-      <button class="btn"><i class="fas fa-plus"></i> New Document</button>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>Active Documents</h3>
-        <div class="value">12</div>
-      </div>
-      <div class="stat-card">
-        <h3>Pending Actions</h3>
-        <div class="value">3</div>
-      </div>
-      <div class="stat-card">
-        <h3>Ongoing Mediations</h3>
-        <div class="value">2</div>
-      </div>
-      <div class="stat-card">
-        <h3>Completed Cases</h3>
-        <div class="value">8</div>
-      </div>
-    </div>
-
-    <!-- Two Column Layout -->
-    <div class="two-column">
-      <!-- Recent Documents -->
-      <div class="documents-section">
-        <div class="section-header">
-          <h2>Recent Documents</h2>
-          <a href="#" style="color: var(--accent-1); text-decoration: none;">View All</a>
+      <div>
+        <div class="dash-mobile-bar">
+          <button type="button" class="btn btn-outline btn-sm" id="openDashDrawer"></button>
+          <span class="badge badge-demo">Client Portal</span>
         </div>
-        <table class="documents-table">
-          <thead>
-            <tr>
-              <th>Document</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="doc-type">
-                  <div class="doc-icon">
-                    <i class="fas fa-file-contract"></i>
-                  </div>
-                  <div>
-                    <div class="doc-name">Rental Agreement</div>
-                    <div class="doc-date">Created: 15 May 2023</div>
-                  </div>
-                </div>
-              </td>
-              <td>Updated: Today</td>
-              <td>
-                <div class="doc-actions">
-                  <button class="action-btn"><i class="fas fa-eye"></i></button>
-                  <button class="action-btn"><i class="fas fa-download"></i></button>
-                  <button class="action-btn"><i class="fas fa-share-alt"></i></button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="doc-type">
-                  <div class="doc-icon">
-                    <i class="fas fa-handshake"></i>
-                  </div>
-                  <div>
-                    <div class="doc-name">Mediation Agreement</div>
-                    <div class="doc-date">Created: 10 May 2023</div>
-                  </div>
-                </div>
-              </td>
-              <td>Updated: 2 days ago</td>
-              <td>
-                <div class="doc-actions">
-                  <button class="action-btn"><i class="fas fa-eye"></i></button>
-                  <button class="action-btn"><i class="fas fa-download"></i></button>
-                  <button class="action-btn"><i class="fas fa-share-alt"></i></button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="doc-type">
-                  <div class="doc-icon">
-                    <i class="fas fa-file-signature"></i>
-                  </div>
-                  <div>
-                    <div class="doc-name">Employment Contract</div>
-                    <div class="doc-date">Created: 5 May 2023</div>
-                  </div>
-                </div>
-              </td>
-              <td>Updated: 1 week ago</td>
-              <td>
-                <div class="doc-actions">
-                  <button class="action-btn"><i class="fas fa-eye"></i></button>
-                  <button class="action-btn"><i class="fas fa-download"></i></button>
-                  <button class="action-btn"><i class="fas fa-share-alt"></i></button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Recent Activity -->
-      <div class="documents-section">
-        <div class="section-header">
-          <h2>Recent Activity</h2>
-          <a href="#" style="color: var(--accent-1); text-decoration: none;">View All</a>
-        </div>
-        <ul class="activity-list">
-          <li class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-file-upload"></i>
-            </div>
-            <div class="activity-content">
-              <div class="activity-title">Document Uploaded</div>
-              <div class="activity-desc">Rental Agreement.pdf was uploaded</div>
-              <div class="activity-time">Today, 10:45 AM</div>
-            </div>
-          </li>
-          <li class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-comment-alt"></i>
-            </div>
-            <div class="activity-content">
-              <div class="activity-title">New Message</div>
-              <div class="activity-desc">You received a message from your mediator</div>
-              <div class="activity-time">Yesterday, 3:22 PM</div>
-            </div>
-          </li>
-          <li class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="activity-content">
-              <div class="activity-title">Mediation Scheduled</div>
-              <div class="activity-desc">Your mediation session is scheduled for June 5</div>
-              <div class="activity-time">May 18, 2023</div>
-            </div>
-          </li>
-          <li class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-file-signature"></i>
-            </div>
-            <div class="activity-content">
-              <div class="activity-title">Document Signed</div>
-              <div class="activity-desc">Employment Contract was signed by all parties</div>
-              <div class="activity-time">May 15, 2023</div>
-            </div>
-          </li>
-        </ul>
+        <div id="dashMain"></div>
       </div>
     </div>
-  </div>
+  </main>
 
+  <div class="drawer-backdrop" id="dashBackdrop"></div>
+  <aside class="drawer left" id="dashDrawer" aria-label="Dashboard menu">
+    <div class="drawer-header">
+      <h3 style="margin:0;">Client Portal</h3>
+      <button type="button" class="icon-btn" id="closeDashDrawer" aria-label="Close"></button>
+    </div>
+    <div class="drawer-body" id="mobileSidebarHost"></div>
+  </aside>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('Dashboard loaded');
-      
-      // Mobile menu toggle functionality would go here
-      // For example:
-      // const menuToggle = document.createElement('button');
-      // menuToggle.classList.add('menu-toggle');
-      // menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-      // document.querySelector('nav').appendChild(menuToggle);
-      // 
-      // menuToggle.addEventListener('click', () => {
-      //   document.querySelector('.sidebar').classList.toggle('open');
-      // });
-    });
+    // Protected route check
+    const activeSession = NDStore.AuthService.requireAuth('Dashboard.html' + location.hash);
+    if (activeSession) {
+      NDUI.initShell('dashboard');
+      document.getElementById('openDashDrawer').innerHTML = ndIcon('menu', 16) + ' Dashboard Menu';
+      document.getElementById('closeDashDrawer').innerHTML = ndIcon('x', 18);
+
+      const dDrawer = document.getElementById('dashDrawer');
+      const dBackdrop = document.getElementById('dashBackdrop');
+      const toggleDashDrawer = (open) => { dDrawer.classList.toggle('open', open); dBackdrop.classList.toggle('open', open); };
+      document.getElementById('openDashDrawer').onclick = () => toggleDashDrawer(true);
+      document.getElementById('closeDashDrawer').onclick = () => toggleDashDrawer(false);
+      dBackdrop.onclick = () => toggleDashDrawer(false);
+
+      const SECTIONS = [
+        { id: 'overview', label: 'Overview', icon: 'layout-grid' },
+        { id: 'appointments', label: 'My Appointments', icon: 'calendar' },
+        { id: 'documents', label: 'My Documents', icon: 'file-text' },
+        { id: 'analyses', label: 'Document Analysis', icon: 'file-search' },
+        { id: 'generated', label: 'Generated Documents', icon: 'file-plus' },
+        { id: 'guidance', label: 'Legal Guidance History', icon: 'compass' },
+        { id: 'cases', label: 'Case Analysis History', icon: 'briefcase' },
+        { id: 'mediations', label: 'Mediation Requests', icon: 'handshake' },
+        { id: 'saved', label: 'Saved Lawyers', icon: 'bookmark' },
+        { id: 'notifications', label: 'Notifications', icon: 'bell' },
+        { id: 'profile', label: 'Profile', icon: 'user' },
+        { id: 'settings', label: 'Settings', icon: 'settings' }
+      ];
+
+      let currentSec = (location.hash || '#overview').replace('#', '');
+      if (!SECTIONS.some(s => s.id === currentSec)) currentSec = 'overview';
+      let apptFilter = 'All';
+      let calDate = new Date();
+
+      window.addEventListener('hashchange', () => {
+        const h = (location.hash || '#overview').replace('#', '');
+        if (SECTIONS.some(s => s.id === h) && h !== currentSec) {
+          currentSec = h;
+          renderAll();
+        }
+      });
+
+      function goSection(sec) {
+        currentSec = sec;
+        if (location.hash !== '#' + sec) history.replaceState(null, '', '#' + sec);
+        toggleDashDrawer(false);
+        renderAll();
+      }
+
+      function buildSidebarHtml() {
+        const prof = NDStore.ProfileService.get();
+        const initials = prof.name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const counts = {
+          appointments: NDStore.AppointmentService.list().filter(a => !['Cancelled', 'Completed'].includes(a.status)).length,
+          mediations: NDStore.MediationService.listRequests().filter(m => !['Resolved', 'Closed'].includes(m.status)).length,
+          saved: NDStore.LawyerService.getSavedIds().length,
+          notifications: NDStore.NotificationService.unreadCount()
+        };
+
+        return `
+          <div class="dash-user-card">
+            <span class="avatar-circle" style="width:38px;height:38px;font-size:14px;">${NDUI.esc(initials)}</span>
+            <div style="min-width:0;">
+              <div style="font-weight:600;color:var(--navy);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${NDUI.esc(prof.name)}</div>
+              <div class="text-xs text-muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${NDUI.esc(prof.email)}</div>
+            </div>
+          </div>
+          <ul class="dash-nav">
+            ${SECTIONS.map(s => `
+              <li>
+                <button type="button" class="${s.id === currentSec ? 'active' : ''}" data-sec="${s.id}">
+                  ${ndIcon(s.icon, 16)}
+                  <span>${NDUI.esc(s.label)}</span>
+                  ${counts[s.id] > 0 ? `<span class="cnt">${counts[s.id]}</span>` : ''}
+                </button>
+              </li>
+            `).join('')}
+            <li style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+              <button type="button" data-switch-lawyer style="color:var(--gold-dark);font-weight:600;">
+                ${ndIcon('refresh', 16)}<span>Switch to Lawyer Portal</span>
+              </button>
+              <button type="button" data-logout style="color:var(--error);">
+                ${ndIcon('log-out', 16)}<span>Logout</span>
+              </button>
+            </li>
+          </ul>
+        `;
+      }
+
+      function wireSidebar(root) {
+        root.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => goSection(b.dataset.sec));
+        root.querySelector('[data-switch-lawyer]').onclick = () => {
+          NDStore.AuthService.demoLogin('lawyer');
+          NDUI.toast('Switched to Lawyer Portal.', 'success');
+          setTimeout(() => { location.href = 'lawyerdash.html'; }, 220);
+        };
+        root.querySelector('[data-logout]').onclick = () => {
+          NDStore.AuthService.logout();
+          NDUI.toast('Signed out successfully.', 'info');
+          setTimeout(() => { location.href = 'index.html'; }, 300);
+        };
+      }
+
+      function renderCalendarHtml(appts) {
+        const y = calDate.getFullYear(), m = calDate.getMonth();
+        const title = calDate.toLocaleString('en-IN', { month: 'long', year: 'numeric' });
+        const todayIso = NDSeed.isoDay(0);
+        const eventSet = new Set(appts.filter(a => a.status !== 'Cancelled').map(a => a.date));
+        const firstDay = new Date(y, m, 1).getDay();
+        const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+        let cells = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => `<div class="cal-hd">${d}</div>`).join('');
+        for (let i = 0; i < firstDay; i++) cells += `<div class="cal-day muted"></div>`;
+        for (let d = 1; d <= daysInMonth; d++) {
+          const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const cls = eventSet.has(iso) ? 'has-event' : iso === todayIso ? 'today' : '';
+          cells += `<div class="cal-day ${cls}" title="${eventSet.has(iso) ? 'Scheduled appointment' : iso}">${d}</div>`;
+        }
+        return `
+          <div class="flex justify-between items-center mb-3">
+            <h3 style="margin:0;font-size:1.05rem;">Appointment Calendar</h3>
+            <div class="flex items-center gap-2">
+              <button type="button" class="icon-btn" style="width:28px;height:28px;" id="calPrev">${ndIcon('chevron-left', 14)}</button>
+              <span class="text-xs" style="font-weight:600;color:var(--navy);min-width:96px;text-align:center;">${title}</span>
+              <button type="button" class="icon-btn" style="width:28px;height:28px;" id="calNext">${ndIcon('chevron-right', 14)}</button>
+            </div>
+          </div>
+          <div class="mini-cal">${cells}</div>
+          <div class="text-xs text-muted mt-3">Highlighted navy dates indicate scheduled appointments.</div>
+        `;
+      }
+
+      function renderOverview() {
+        const prof = NDStore.ProfileService.get();
+        const appts = NDStore.AppointmentService.list();
+        const upcoming = appts.filter(a => ['Confirmed', 'Pending', 'Rescheduled'].includes(a.status));
+        const meds = NDStore.MediationService.listRequests();
+        const activeMeds = meds.filter(m => !['Resolved', 'Closed'].includes(m.status));
+        const docs = NDStore.DocumentService.listGenerated();
+        const analyses = NDStore.DocumentService.listAnalyses();
+        const savedLawyers = NDStore.LawyerService.getSaved();
+        const notifs = NDStore.NotificationService.list().slice(0, 4);
+
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-6">
+            <div>
+              <span class="eyebrow">Client Portal Overview</span>
+              <h1 style="font-size:2rem;margin-bottom:4px;">Welcome back, ${NDUI.esc(prof.name.split(' ')[0])}</h1>
+              <p class="mb-0 text-sm">All your consultations, saved drafts, analyses, and mediation updates in one place.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <a href="booking.html" class="btn btn-primary btn-sm">${ndIcon('calendar', 14)} Book Consultation</a>
+              <a href="docgen.html" class="btn btn-outline btn-sm">${ndIcon('file-plus', 14)} New Draft</a>
+              <a href="scanner.html" class="btn btn-outline btn-sm">${ndIcon('file-search', 14)} Analyze Doc</a>
+            </div>
+          </div>
+
+          <div class="grid-4 mb-6">
+            <div class="kpi-card"><div class="kpi-label">Upcoming Consultations</div><div class="kpi-val">${upcoming.length}</div></div>
+            <div class="kpi-card"><div class="kpi-label">Active Mediations</div><div class="kpi-val">${activeMeds.length}</div></div>
+            <div class="kpi-card"><div class="kpi-label">Saved Documents</div><div class="kpi-val">${docs.length + analyses.length}</div></div>
+            <div class="kpi-card"><div class="kpi-label">Saved Lawyers</div><div class="kpi-val">${savedLawyers.length}</div></div>
+          </div>
+
+          <div class="grid-2" style="grid-template-columns:1.35fr 0.85fr;align-items:start;">
+            <div style="display:flex;flex-direction:column;gap:20px;">
+              <div class="card">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 style="margin:0;">Upcoming Consultations</h3>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="goSection('appointments')">View All</button>
+                </div>
+                ${upcoming.length ? upcoming.slice(0, 4).map(a => `
+                  <div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <div>
+                      <strong style="color:var(--navy);">${NDUI.esc(a.lawyerName)}</strong>
+                      <div class="text-xs text-muted">${NDUI.esc(a.date)} · ${NDUI.esc(a.slot)} IST · ${NDUI.esc(a.mode)} · ${NDUI.esc(a.practiceArea)}</div>
+                    </div>
+                    ${NDUI.statusBadge(a.status)}
+                  </div>
+                `).join('') : '<p class="text-sm mb-0">No upcoming appointments.</p>'}
+              </div>
+
+              <div class="card">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 style="margin:0;">Active Mediation Requests</h3>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="goSection('mediations')">Track All</button>
+                </div>
+                ${activeMeds.length ? activeMeds.slice(0, 3).map(m => `
+                  <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+                    <div class="flex justify-between items-center gap-2 flex-wrap">
+                      <strong style="color:var(--navy);font-size:14px;">${NDUI.esc(m.title)}</strong>
+                      ${NDUI.statusBadge(m.status)}
+                    </div>
+                    <div class="text-xs text-muted mt-2">${NDUI.esc(m.id)} · ${NDUI.esc(m.category)} · Mediator: ${NDUI.esc(m.mediatorName)}</div>
+                  </div>
+                `).join('') : '<p class="text-sm mb-0">No active mediation requests.</p>'}
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:20px;">
+              <div class="card" id="calBox">${renderCalendarHtml(appts)}</div>
+
+              <div class="card">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 style="margin:0;font-size:1.05rem;">Recent Notifications</h3>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="goSection('notifications')">All</button>
+                </div>
+                ${notifs.map(n => `
+                  <div style="padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;">
+                    <div style="font-weight:600;color:var(--navy);">${NDUI.esc(n.title)}</div>
+                    <div class="text-xs text-muted">${NDUI.esc(n.message)}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('calPrev').onclick = () => { calDate.setMonth(calDate.getMonth() - 1); renderOverview(); };
+        document.getElementById('calNext').onclick = () => { calDate.setMonth(calDate.getMonth() + 1); renderOverview(); };
+      }
+
+      function renderAppointments() {
+        const all = NDStore.AppointmentService.list();
+        const filtered = all.filter(a => {
+          if (apptFilter === 'Upcoming') return ['Confirmed', 'Pending', 'Rescheduled'].includes(a.status);
+          if (apptFilter === 'Completed') return a.status === 'Completed';
+          if (apptFilter === 'Cancelled') return a.status === 'Cancelled';
+          return true;
+        });
+
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">My Appointments</h1><p class="text-sm mb-0">Reschedule, cancel, or export calendar invites for your appointments.</p></div>
+            <a href="booking.html" class="btn btn-primary btn-sm">${ndIcon('calendar', 14)} Book Consultation</a>
+          </div>
+          <div class="card">
+            <div class="tabs">
+              ${['All', 'Upcoming', 'Completed', 'Cancelled'].map(t => `<button type="button" class="tab-btn ${apptFilter === t ? 'active' : ''}" data-af="${t}">${t}</button>`).join('')}
+            </div>
+            ${filtered.length ? `
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th>Ref</th><th>Lawyer</th><th>Date &amp; Slot</th><th>Mode</th><th>Status</th><th>Actions</th></tr></thead>
+                  <tbody>
+                    ${filtered.map(a => `
+                      <tr>
+                        <td><strong>${NDUI.esc(a.id)}</strong></td>
+                        <td>${NDUI.esc(a.lawyerName)}<div class="text-xs text-muted">${NDUI.esc(a.practiceArea)} · ${NDUI.esc(a.city)}</div></td>
+                        <td>${NDUI.esc(a.date)} · ${NDUI.esc(a.slot)} IST</td>
+                        <td>${NDUI.esc(a.mode)}</td>
+                        <td>${NDUI.statusBadge(a.status)}</td>
+                        <td>
+                          <div class="flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-outline btn-sm" data-ics="${NDUI.esc(a.id)}">.ICS</button>
+                            ${!['Cancelled', 'Completed'].includes(a.status) ? `
+                              <button type="button" class="btn btn-outline btn-sm" data-rs="${NDUI.esc(a.id)}">Reschedule</button>
+                              <button type="button" class="btn btn-danger-outline btn-sm" data-cn="${NDUI.esc(a.id)}">Cancel</button>
+                            ` : ''}
+                          </div>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            ` : NDUI.renderEmptyState({ icon: 'calendar', title: 'No Appointments in This View', description: 'Schedule a consultation to see it tracked here.', actionHtml: `<a href="booking.html" class="btn btn-primary btn-sm">Book Consultation</a>` })}
+          </div>
+        `;
+        host.querySelectorAll('[data-af]').forEach(b => b.onclick = () => { apptFilter = b.dataset.af; renderAppointments(); });
+        host.querySelectorAll('[data-ics]').forEach(b => b.onclick = () => {
+          const a = all.find(x => x.id === b.dataset.ics);
+          if (a) NDUI.downloadIcs(a);
+        });
+        host.querySelectorAll('[data-cn]').forEach(b => b.onclick = async () => {
+          const ok = await NDUI.confirmDialog({ title: 'Cancel Appointment', message: `Cancel appointment ${b.dataset.cn}?`, confirmText: 'Cancel Appointment', destructive: true });
+          if (!ok) return;
+          NDStore.AppointmentService.cancel(b.dataset.cn);
+          NDUI.toast('Appointment cancelled.', 'info');
+          renderAll();
+        });
+        host.querySelectorAll('[data-rs]').forEach(b => b.onclick = () => {
+          const appt = all.find(x => x.id === b.dataset.rs);
+          const l = NDStore.LawyerService.getById(appt.lawyerId);
+          const bd = NDUI.openModal({
+            title: `Reschedule ${appt.id}`,
+            bodyHtml: `
+              <form id="drsForm">
+                <div class="form-group"><label class="form-label">New Date</label><input class="form-control" type="date" id="drsDate" value="${NDSeed.isoDay(5)}" min="${NDSeed.isoDay(1)}" required></div>
+                <div class="form-group"><label class="form-label">Time Slot (IST)</label><select class="form-select" id="drsSlot">${(l?.slots || ['10:00', '14:00', '16:00']).map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                <button type="submit" class="btn btn-primary btn-block">Update Appointment</button>
+              </form>
+            `
+          });
+          bd.querySelector('#drsForm').onsubmit = (e) => {
+            e.preventDefault();
+            try {
+              NDStore.AppointmentService.reschedule(appt.id, { date: bd.querySelector('#drsDate').value, slot: bd.querySelector('#drsSlot').value });
+              NDUI.closeModal();
+              NDUI.toast('Appointment rescheduled!', 'success');
+              renderAll();
+            } catch (err) { NDUI.toast(err.message, 'error'); }
+          };
+        });
+      }
+
+      function renderDocumentsUnified() {
+        const gen = NDStore.DocumentService.listGenerated();
+        const anl = NDStore.DocumentService.listAnalyses();
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">My Documents</h1><p class="text-sm mb-0">All saved generated drafts (${gen.length}) and document analyses (${anl.length}).</p></div>
+            <div class="flex gap-2"><a href="docgen.html" class="btn btn-primary btn-sm">Generate Draft</a><a href="scanner.html" class="btn btn-outline btn-sm">Analyze Document</a></div>
+          </div>
+          <div class="card mb-4">
+            <h3 style="margin-bottom:12px;">Generated Drafts (${gen.length})</h3>
+            ${gen.length ? gen.map(d => `
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--border);">
+                <div><strong>${NDUI.esc(d.title)}</strong><div class="text-xs text-muted">${NDUI.esc(d.templateName)} · ${NDUI.esc(d.createdAt)}</div></div>
+                <div class="flex gap-2">
+                  <button type="button" class="btn btn-outline btn-sm" data-prev-gen="${NDUI.esc(d.id)}">Preview</button>
+                  <button type="button" class="btn btn-outline btn-sm" data-docx-gen="${NDUI.esc(d.id)}">DOCX</button>
+                </div>
+              </div>
+            `).join('') : '<p class="text-sm mb-0">No generated drafts yet.</p>'}
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:12px;">Saved Document Analyses (${anl.length})</h3>
+            ${anl.length ? anl.map(a => `
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--border);">
+                <div><strong>${NDUI.esc(a.sourceName)}</strong><div class="text-xs text-muted">${NDUI.esc(a.analysis.docType)} · ${NDUI.esc(a.createdAt)}</div></div>
+                <button type="button" class="btn btn-outline btn-sm" data-prev-anl="${NDUI.esc(a.id)}">View Summary</button>
+              </div>
+            `).join('') : '<p class="text-sm mb-0">No saved analyses yet.</p>'}
+          </div>
+        `;
+        host.querySelectorAll('[data-prev-gen]').forEach(b => b.onclick = () => {
+          const d = gen.find(x => x.id === b.dataset.prevGen);
+          if (d) NDUI.openModal({ title: d.title, size: 'modal-lg', bodyHtml: `<pre style="white-space:pre-wrap;font-family:Georgia,serif;font-size:14px;line-height:1.7;">${NDUI.esc(d.content)}</pre>` });
+        });
+        host.querySelectorAll('[data-docx-gen]').forEach(b => b.onclick = () => {
+          const d = gen.find(x => x.id === b.dataset.docxGen);
+          if (d) NDUI.downloadDocxOrTxt(d.title, d.content);
+        });
+        host.querySelectorAll('[data-prev-anl]').forEach(b => b.onclick = () => {
+          const a = anl.find(x => x.id === b.dataset.prevAnl);
+          if (a) NDUI.openModal({ title: a.sourceName, size: 'modal-lg', bodyHtml: `<p>${NDUI.esc(a.analysis.summary)}</p><h4>Potential Issues</h4><ul>${a.analysis.potentialIssues.map(i => `<li>${NDUI.esc(i)}</li>`).join('')}</ul>` });
+        });
+      }
+
+      function renderAnalyses() {
+        const list = NDStore.DocumentService.listAnalyses();
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">Document Analysis History</h1><p class="text-sm mb-0">Review, export, or delete saved document breakdowns.</p></div>
+            <a href="scanner.html" class="btn btn-primary btn-sm">Analyze New Document</a>
+          </div>
+          <div class="card">
+            ${list.length ? list.map(a => `
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--border);">
+                <div>
+                  <strong style="color:var(--navy);">${NDUI.esc(a.sourceName)}</strong>
+                  <div class="text-xs text-muted mt-2">${NDUI.esc(a.analysis.docType)} · ${NDUI.esc(a.sourceType)} · ${NDUI.esc(a.createdAt)}</div>
+                </div>
+                <div class="flex gap-2">
+                  <button type="button" class="btn btn-outline btn-sm" data-va="${NDUI.esc(a.id)}">View</button>
+                  <button type="button" class="btn btn-danger-outline btn-sm" data-da="${NDUI.esc(a.id)}">Delete</button>
+                </div>
+              </div>
+            `).join('') : NDUI.renderEmptyState({ icon: 'file-search', title: 'No Saved Analyses', description: 'Use the Legal Document Analyzer to review and save document summaries.', actionHtml: `<a href="scanner.html" class="btn btn-primary btn-sm">Open Analyzer</a>` })}
+          </div>
+        `;
+        host.querySelectorAll('[data-va]').forEach(b => b.onclick = () => {
+          const a = list.find(x => x.id === b.dataset.va);
+          if (!a) return;
+          NDUI.openModal({
+            title: a.sourceName,
+            size: 'modal-lg',
+            bodyHtml: `<p><strong>Summary:</strong> ${NDUI.esc(a.analysis.summary)}</p><h4>Important Clauses</h4><ul>${a.analysis.importantClauses.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul><h4>Potential Issues</h4><ul>${a.analysis.potentialIssues.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul><h4>Lawyer Questions</h4><ul>${a.analysis.lawyerQuestions.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>`
+          });
+        });
+        host.querySelectorAll('[data-da]').forEach(b => b.onclick = async () => {
+          const ok = await NDUI.confirmDialog({ title: 'Delete Analysis', message: 'Remove this analysis from history?', confirmText: 'Delete', destructive: true });
+          if (!ok) return;
+          NDStore.DocumentService.deleteAnalysis(b.dataset.da);
+          renderAll();
+        });
+      }
+
+      function renderGenerated() {
+        const list = NDStore.DocumentService.listGenerated();
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">Generated Documents</h1><p class="text-sm mb-0">Preview, print PDF, or download Word (.docx) copies of your saved drafts.</p></div>
+            <a href="docgen.html" class="btn btn-primary btn-sm">Generate New Draft</a>
+          </div>
+          <div class="card">
+            ${list.length ? `
+              <div class="table-wrap"><table class="data-table">
+                <thead><tr><th>Title</th><th>Template</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody>
+                  ${list.map(d => `
+                    <tr>
+                      <td><strong>${NDUI.esc(d.title)}</strong></td>
+                      <td>${NDUI.esc(d.templateName)}</td>
+                      <td>${NDUI.statusBadge(d.status)}</td>
+                      <td>${NDUI.esc(d.createdAt)}</td>
+                      <td>
+                        <div class="flex gap-2 flex-wrap">
+                          <button type="button" class="btn btn-outline btn-sm" data-vg="${NDUI.esc(d.id)}">View</button>
+                          <button type="button" class="btn btn-outline btn-sm" data-pg="${NDUI.esc(d.id)}">PDF</button>
+                          <button type="button" class="btn btn-outline btn-sm" data-wg="${NDUI.esc(d.id)}">DOCX</button>
+                          <button type="button" class="btn btn-danger-outline btn-sm" data-dg="${NDUI.esc(d.id)}">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table></div>
+            ` : NDUI.renderEmptyState({ icon: 'file-plus', title: 'No Generated Drafts', description: 'Create a draft in the Legal Document Generator to manage it here.', actionHtml: `<a href="docgen.html" class="btn btn-primary btn-sm">Open Generator</a>` })}
+          </div>
+        `;
+        host.querySelectorAll('[data-vg]').forEach(b => b.onclick = () => {
+          const d = list.find(x => x.id === b.dataset.vg);
+          if (d) NDUI.openModal({ title: d.title, size: 'modal-lg', bodyHtml: `<pre style="white-space:pre-wrap;font-family:Georgia,serif;font-size:14px;line-height:1.7;">${NDUI.esc(d.content)}</pre>` });
+        });
+        host.querySelectorAll('[data-pg]').forEach(b => b.onclick = () => {
+          const d = list.find(x => x.id === b.dataset.pg);
+          if (d) NDUI.printDocument(d.title, d.content);
+        });
+        host.querySelectorAll('[data-wg]').forEach(b => b.onclick = () => {
+          const d = list.find(x => x.id === b.dataset.wg);
+          if (d) NDUI.downloadDocxOrTxt(d.title, d.content);
+        });
+        host.querySelectorAll('[data-dg]').forEach(b => b.onclick = async () => {
+          const ok = await NDUI.confirmDialog({ title: 'Delete Draft', message: 'Remove this draft?', confirmText: 'Delete', destructive: true });
+          if (!ok) return;
+          NDStore.DocumentService.deleteGenerated(b.dataset.dg);
+          renderAll();
+        });
+      }
+
+      function renderGuidance() {
+        const list = NDStore.DocumentService.listGuidanceHistory();
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">Legal Guidance History</h1><p class="text-sm mb-0">Saved procedural checklists from Legal Next Steps.</p></div>
+            <a href="gen.html" class="btn btn-primary btn-sm">Start New Wizard</a>
+          </div>
+          <div class="card">
+            ${list.length ? list.map(g => `
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--border);">
+                <div><strong>${NDUI.esc(g.title)}</strong><div class="text-xs text-muted mt-2">${NDUI.esc(g.summary)} · ${NDUI.esc(g.createdAt)}</div></div>
+                <div class="flex gap-2">
+                  <button type="button" class="btn btn-outline btn-sm" data-vgd="${NDUI.esc(g.id)}">View</button>
+                  <button type="button" class="btn btn-danger-outline btn-sm" data-dgd="${NDUI.esc(g.id)}">Delete</button>
+                </div>
+              </div>
+            `).join('') : NDUI.renderEmptyState({ icon: 'compass', title: 'No Saved Guidance', description: 'Complete the Legal Next Steps wizard and save your checklist.', actionHtml: `<a href="gen.html" class="btn btn-primary btn-sm">Open Next Steps</a>` })}
+          </div>
+        `;
+        host.querySelectorAll('[data-vgd]').forEach(b => b.onclick = () => {
+          const g = list.find(x => x.id === b.dataset.vgd);
+          if (!g) return;
+          NDUI.openModal({
+            title: g.title,
+            size: 'modal-lg',
+            bodyHtml: `<p>${NDUI.esc(g.summary)}</p><h4>Procedural Steps</h4><ol>${(g.workflow?.procedure || []).map(p => `<li>${NDUI.esc(p)}</li>`).join('')}</ol><h4>Documents Checklist</h4><ul>${(g.workflow?.documents || []).map(d => `<li>${NDUI.esc(d)}</li>`).join('')}</ul>`
+          });
+        });
+        host.querySelectorAll('[data-dgd]').forEach(b => b.onclick = async () => {
+          const ok = await NDUI.confirmDialog({ title: 'Delete Guidance', message: 'Remove this saved guidance record?', confirmText: 'Delete', destructive: true });
+          if (!ok) return;
+          NDStore.DocumentService.deleteGuidance(b.dataset.dgd);
+          renderAll();
+        });
+      }
+
+      function renderCases() {
+        const list = NDStore.CaseService.listHistory();
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">Case Analysis History</h1><p class="text-sm mb-0">Structured case explorations saved from the Case Simulator.</p></div>
+            <a href="simulator.html" class="btn btn-primary btn-sm">New Case Exploration</a>
+          </div>
+          <div class="card">
+            ${list.length ? list.map(c => `
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--border);">
+                <div><strong>${NDUI.esc(c.title)}</strong><div class="text-xs text-muted mt-2">${NDUI.esc(c.category)} · Saved ${NDUI.esc(c.createdAt)}</div></div>
+                <div class="flex gap-2">
+                  <button type="button" class="btn btn-outline btn-sm" data-vc="${NDUI.esc(c.id)}">View</button>
+                  <button type="button" class="btn btn-danger-outline btn-sm" data-dc="${NDUI.esc(c.id)}">Delete</button>
+                </div>
+              </div>
+            `).join('') : NDUI.renderEmptyState({ icon: 'briefcase', title: 'No Saved Case Reports', description: 'Explore a case in the simulator and save it here.', actionHtml: `<a href="simulator.html" class="btn btn-primary btn-sm">Open Simulator</a>` })}
+          </div>
+        `;
+        host.querySelectorAll('[data-vc]').forEach(b => b.onclick = () => {
+          const c = list.find(x => x.id === b.dataset.vc);
+          if (!c) return;
+          NDUI.openModal({
+            title: c.title,
+            size: 'modal-lg',
+            bodyHtml: `<span class="badge badge-demo mb-3">Case Analysis</span><p>${NDUI.esc(c.report.overview)}</p><h4>Key Legal Questions</h4><ul>${c.report.legalQuestions.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul><h4>Suggested Lawyer Questions</h4><ul>${c.report.consultationQuestions.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>`
+          });
+        });
+        host.querySelectorAll('[data-dc]').forEach(b => b.onclick = async () => {
+          const ok = await NDUI.confirmDialog({ title: 'Delete Case Report', message: 'Delete this saved case exploration?', confirmText: 'Delete', destructive: true });
+          if (!ok) return;
+          NDStore.CaseService.deleteCase(b.dataset.dc);
+          renderAll();
+        });
+      }
+
+      function renderMediations() {
+        const list = NDStore.MediationService.listRequests();
+        const stages = NDSeed.MEDIATION_STAGES;
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">Mediation Requests</h1><p class="text-sm mb-0">Track mediation requests across all 7 stages.</p></div>
+            <a href="Mediators.html#request-wizard" class="btn btn-primary btn-sm">Submit Mediation Request</a>
+          </div>
+          <div style="display:grid;gap:14px;">
+            ${list.map(r => {
+              const cur = stages.indexOf(r.status);
+              return `
+                <article class="card">
+                  <div class="flex justify-between items-center flex-wrap gap-2">
+                    <div>
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <strong style="color:var(--navy);">${NDUI.esc(r.title)}</strong>
+                        <span class="badge badge-navy">${NDUI.esc(r.id)}</span>
+                        ${NDUI.statusBadge(r.status)}
+                      </div>
+                      <div class="text-xs text-muted mt-2">${NDUI.esc(r.category)} · Mediator: ${NDUI.esc(r.mediatorName)} · ${NDUI.esc(r.preferredDate)} ${NDUI.esc(r.preferredSlot)} IST</div>
+                    </div>
+                    ${cur < stages.length - 1 ? `<button type="button" class="btn btn-outline btn-sm" data-madv="${NDUI.esc(r.id)}">Advance Stage</button>` : ''}
+                  </div>
+                  <div class="stage-mini">${stages.map((s, i) => `<span class="${i < cur ? 'done' : i === cur ? 'cur' : ''}">${NDUI.esc(s)}</span>`).join('')}</div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        `;
+        host.querySelectorAll('[data-madv]').forEach(b => b.onclick = () => {
+          const u = NDStore.MediationService.advanceDemoStatus(b.dataset.madv);
+          NDUI.toast(`Request ${u.id} updated to ${u.status}.`, 'success');
+          renderAll();
+        });
+      }
+
+      function renderSavedLawyers() {
+        const list = NDStore.LawyerService.getSaved();
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">Saved Lawyers</h1><p class="text-sm mb-0">Bookmarked advocate profiles for easy comparison and scheduling.</p></div>
+            <a href="lawyers.html" class="btn btn-primary btn-sm">Browse Directory</a>
+          </div>
+          ${list.length ? `<div class="grid-2">${list.map(l => `
+            <article class="card">
+              <div class="flex justify-between items-center mb-2">
+                <span class="badge badge-demo">Verified Advocate</span>
+                <span class="badge badge-navy">${NDUI.esc(l.availability)}</span>
+              </div>
+              <h3 style="margin-bottom:4px;">${NDUI.esc(l.name)}</h3>
+              <p class="text-sm mb-3">${NDUI.esc(l.primaryArea)} · ${NDUI.esc(l.city)} · ${l.experience} yrs · ₹${l.fee.toLocaleString('en-IN')}</p>
+              <div class="flex gap-2 flex-wrap">
+                <a href="lawyer-profile.html?id=${encodeURIComponent(l.id)}" class="btn btn-outline btn-sm">Profile</a>
+                <a href="booking.html?lawyer=${encodeURIComponent(l.id)}" class="btn btn-primary btn-sm">Book</a>
+                <button type="button" class="btn btn-danger-outline btn-sm" data-unsave="${NDUI.esc(l.id)}">Remove</button>
+              </div>
+            </article>
+          `).join('')}</div>` : NDUI.renderEmptyState({ icon: 'bookmark', title: 'No Saved Lawyers Yet', description: 'Click the bookmark icon on any profile in the Lawyer Directory to save them here.', actionHtml: `<a href="lawyers.html" class="btn btn-primary btn-sm">Explore Directory</a>` })}
+        `;
+        host.querySelectorAll('[data-unsave]').forEach(b => b.onclick = () => {
+          NDStore.LawyerService.toggleSaved(b.dataset.unsave);
+          NDUI.toast('Removed from Saved Lawyers.', 'info');
+          renderAll();
+        });
+      }
+
+      function renderNotifications() {
+        const list = NDStore.NotificationService.list();
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+            <div><h1 style="font-size:1.8rem;margin:0 0 4px;">Notifications</h1><p class="text-sm mb-0">Updates across your appointments, mediations, and saved documents.</p></div>
+            <button type="button" class="btn btn-outline btn-sm" id="dashMarkAllRead">Mark All Read</button>
+          </div>
+          <div class="card">
+            ${list.map(n => `
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:13px 10px;border-bottom:1px solid var(--border);background:${n.read ? 'transparent' : '#FDFBF7'};">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <strong style="color:var(--navy);font-size:14px;">${NDUI.esc(n.title)}</strong>
+                    ${n.read ? '' : '<span class="badge badge-demo">New</span>'}
+                  </div>
+                  <p class="text-sm mt-2 mb-0">${NDUI.esc(n.message)}</p>
+                  <div class="text-xs text-muted mt-2">${NDUI.esc(n.time)}</div>
+                </div>
+                ${n.read ? '' : `<button type="button" class="btn btn-ghost btn-sm" data-mread="${NDUI.esc(n.id)}">Mark read</button>`}
+              </div>
+            `).join('')}
+          </div>
+        `;
+        document.getElementById('dashMarkAllRead').onclick = () => {
+          NDStore.NotificationService.markAllRead();
+          NDUI.toast('All notifications marked as read.', 'success');
+          renderAll();
+        };
+        host.querySelectorAll('[data-mread]').forEach(b => b.onclick = () => {
+          NDStore.NotificationService.markRead(b.dataset.mread);
+          renderAll();
+        });
+      }
+
+      function renderProfile() {
+        const p = NDStore.ProfileService.get();
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <h1 style="font-size:1.8rem;margin:0 0 4px;">My Profile</h1>
+          <p class="text-sm mb-4">Updates persist locally across page refreshes.</p>
+          <form class="card" id="profForm" style="max-width:640px;">
+            <div class="grid-2" style="gap:14px;">
+              <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="pName" value="${NDUI.esc(p.name)}" required></div>
+              <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="pEmail" type="email" value="${NDUI.esc(p.email)}" required></div>
+              <div class="form-group"><label class="form-label">Phone Number</label><input class="form-control" id="pPhone" value="${NDUI.esc(p.phone || '')}"></div>
+              <div class="form-group"><label class="form-label">City</label><select class="form-select" id="pCity">${NDSeed.CITIES.map(c => `<option value="${NDUI.esc(c.name)}" ${c.name === p.city ? 'selected' : ''}>${NDUI.esc(c.name)}</option>`).join('')}</select></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Language</label>
+              <select class="form-select" id="pLang">
+                ${['English', 'Hindi', 'Marathi', 'Tamil', 'Kannada', 'Bengali', 'Telugu', 'Gujarati'].map(l => `<option value="${l}" ${l === p.preferredLanguage ? 'selected' : ''}>${l}</option>`).join('')}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+          </form>
+        `;
+        document.getElementById('profForm').onsubmit = (e) => {
+          e.preventDefault();
+          try {
+            NDStore.ProfileService.update({
+              name: document.getElementById('pName').value,
+              email: document.getElementById('pEmail').value,
+              phone: document.getElementById('pPhone').value,
+              city: document.getElementById('pCity').value,
+              preferredLanguage: document.getElementById('pLang').value
+            });
+            NDUI.renderNavbar('dashboard');
+            NDUI.toast('Profile changes saved!', 'success');
+            renderAll();
+          } catch (err) { NDUI.toast(err.message, 'error'); }
+        };
+      }
+
+      function renderSettings() {
+        const p = NDStore.ProfileService.get();
+        const prefs = p.preferences || {};
+        const host = document.getElementById('dashMain');
+        host.innerHTML = `
+          <h1 style="font-size:1.8rem;margin:0 0 4px;">Settings &amp; Preferences</h1>
+          <p class="text-sm mb-4">Manage notification preferences or reset your workspace data.</p>
+          <div class="card mb-4" style="max-width:640px;">
+            <h3>Preferences</h3>
+            <label style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+              <span>Appointment reminders in activity feed</span>
+              <input type="checkbox" id="prefAppt" ${prefs.appointmentReminders ? 'checked' : ''}>
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+              <span>Mediation status update alerts</span>
+              <input type="checkbox" id="prefMed" ${prefs.mediationUpdates ? 'checked' : ''}>
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;cursor:pointer;">
+              <span>Email digest notifications</span>
+              <input type="checkbox" id="prefEmail" ${prefs.emailAlerts ? 'checked' : ''}>
+            </label>
+            <button type="button" class="btn btn-primary btn-sm mt-4" id="savePrefsBtn">Save Preferences</button>
+          </div>
+
+          <div class="card" style="max-width:640px;border-color:#FECACA;">
+            <h3 style="color:var(--error);">Reset Workspace Data</h3>
+            <p class="text-sm">Restore appointments, saved documents, analyses, mediation requests, notifications, and profile details back to their initial state.</p>
+            <button type="button" class="btn btn-danger" id="resetDemoBtn">${ndIcon('refresh', 15)} Reset Workspace Data</button>
+          </div>
+        `;
+        document.getElementById('savePrefsBtn').onclick = () => {
+          NDStore.ProfileService.update({
+            preferences: {
+              appointmentReminders: document.getElementById('prefAppt').checked,
+              mediationUpdates: document.getElementById('prefMed').checked,
+              emailAlerts: document.getElementById('prefEmail').checked
+            }
+          });
+          NDUI.toast('Preferences saved.', 'success');
+        };
+        document.getElementById('resetDemoBtn').onclick = async () => {
+          const ok = await NDUI.confirmDialog({
+            title: 'Reset Workspace Data',
+            message: 'This will clear your recent changes and restore the default workspace state. Continue?',
+            confirmText: 'Reset Data',
+            destructive: true
+          });
+          if (!ok) return;
+          NDStore.DemoAdminService.resetAll();
+          NDUI.renderNavbar('dashboard');
+          NDUI.toast('Workspace data has been reset.', 'success');
+          goSection('overview');
+        };
+      }
+
+      const RENDERERS = {
+        overview: renderOverview,
+        appointments: renderAppointments,
+        documents: renderDocumentsUnified,
+        analyses: renderAnalyses,
+        generated: renderGenerated,
+        guidance: renderGuidance,
+        cases: renderCases,
+        mediations: renderMediations,
+        saved: renderSavedLawyers,
+        notifications: renderNotifications,
+        profile: renderProfile,
+        settings: renderSettings
+      };
+
+      function renderAll() {
+        const sb = buildSidebarHtml();
+        document.getElementById('desktopSidebar').innerHTML = sb;
+        document.getElementById('mobileSidebarHost').innerHTML = sb;
+        wireSidebar(document.getElementById('desktopSidebar'));
+        wireSidebar(document.getElementById('mobileSidebarHost'));
+        (RENDERERS[currentSec] || renderOverview)();
+      }
+
+      window.goSection = goSection;
+      renderAll();
+    }
   </script>
 </body>
 </html>

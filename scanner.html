@@ -1,248 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload, Scan and Understand</title>
-    <link rel="stylesheet" href="scanner.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --accent: #4cc9f0;
-            --dark: #121212;
-            --light: #f8f9fa;
-            --success: #4ad66d;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background-color: var(--dark);
-            color: var(--light);
-            font-family: "Poppins", sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem;
-        }
-        
-        .container {
-            max-width: 800px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--accent), var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .subtitle {
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.8);
-            text-align: center;
-            line-height: 1.6;
-            max-width: 600px;
-        }
-        
-        .upload-section {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin: 1rem 0;
-        }
-        
-        .custum-file-upload {
-            transition: all 0.3s ease;
-            border-color: var(--primary);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .custum-file-upload:hover {
-            border-color: var(--accent);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
-        }
-        
-        .custum-file-upload .icon svg {
-            fill: var(--accent);
-            transition: transform 0.3s ease;
-        }
-        
-        .custum-file-upload:hover .icon svg {
-            transform: scale(1.1);
-        }
-        
-        .file-selected {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .file-selected .file-icon {
-            font-size: 2.5rem;
-            color: var(--accent);
-        }
-        
-        .file-selected .file-name {
-            font-weight: 500;
-            text-align: center;
-            word-break: break-word;
-            max-width: 250px;
-        }
-        
-        .change-file {
-            color: var(--accent);
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
-        
-        .scan-button {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            padding: 0.8rem 2.5rem;
-            border-radius: 50px;
-            border: none;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .scan-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
-        }
-        
-        .scan-button:active {
-            transform: translateY(1px);
-        }
-        
-        .file-info {
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        footer {
-            margin-top: 3rem;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-            text-align: center;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal Document Analyzer — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <style>
+    .analyzer-layout {
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .analysis-block {
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--navy);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+    .analysis-block.warn { border-left-color: var(--error); background: #FFFBF9; }
+    .analysis-block h4 { margin: 0 0 8px; display: flex; align-items: center; gap: 7px; }
+    .analysis-block ul { margin: 0; padding-left: 18px; color: var(--text-primary); font-size: 14px; }
+    .analysis-block li { margin-bottom: 6px; }
+    .doc-preview-box {
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      font-family: Georgia, serif;
+      font-size: 14px;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      max-height: 520px;
+      overflow-y: auto;
+      color: var(--text-primary);
+    }
+    @media (max-width: 960px) { .analyzer-layout { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Upload, Scan and Understand</h1>
-        <p class="subtitle">
-            Complex legal language makes it harder to understand for the general public.<br>
-            Let us simplify your documents with AI-powered analysis.
-        </p>
-        
-        <div class="upload-section">
-            <label for="file" class="custum-file-upload" id="upload-label">
-                <div class="icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z"/>
-                    </svg>
-                </div>
-                <div class="text">
-                    <span>Click to upload document or image</span>
-                </div>
-                <input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png">
-                
-                <div class="file-selected" id="file-selected">
-                    <div class="file-icon">📄</div>
-                    <div class="file-name" id="file-name"></div>
-                    <div class="change-file">Change file</div>
-                </div>
-            </label>
-        </div>
-        
-        <p class="file-info">Supports PDF, JPG, PNG (Max 10MB)</p>
-        
-        <button class="scan-button" id="scan-button">Simplify Document</button>
-    </div>
-    
-    <footer>
-        © 2023 Legal Document Scanner. All rights reserved.
-    </footer>
+  <div id="site-header"></div>
 
-    <script>
-        document.getElementById('file').addEventListener('change', function(e) {
-            const fileInput = e.target;
-            const uploadLabel = document.getElementById('upload-label');
-            const fileSelected = document.getElementById('file-selected');
-            const fileName = document.getElementById('file-name');
-            const scanButton = document.getElementById('scan-button');
-            
-            if (fileInput.files.length > 0) {
-                // Show selected file info
-                fileName.textContent = fileInput.files[0].name;
-                
-                // Change icon based on file type
-                const fileIcon = fileSelected.querySelector('.file-icon');
-                const fileExt = fileInput.files[0].name.split('.').pop().toLowerCase();
-                
-                if (fileExt === 'pdf') {
-                    fileIcon.textContent = '📕';
-                } else if (['jpg', 'jpeg', 'png'].includes(fileExt)) {
-                    fileIcon.textContent = '🖼️';
-                } else {
-                    fileIcon.textContent = '📄';
-                }
-                
-                // Switch to selected file view
-                uploadLabel.querySelector('.icon').style.display = 'none';
-                uploadLabel.querySelector('.text').style.display = 'none';
-                fileSelected.style.display = 'flex';
-                
-                // Enable scan button
-                scanButton.disabled = false;
-                scanButton.style.opacity = '1';
-            }
-        });
-        
-        // Handle change file click
-        document.querySelector('.change-file').addEventListener('click', function(e) {
-            e.stopPropagation();
-            document.getElementById('file').click();
-        });
-    </script>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div id="bc"></div>
+        <span class="eyebrow">Document Intelligence</span>
+        <h1>Legal Document Analyzer</h1>
+        <p>Inspect 20 reference legal documents or upload a PDF, DOCX, or TXT file for local text extraction and structured clause review.</p>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="disclaimer-box mb-6">
+          <span id="anWarnIcon"></span>
+          <div>
+            <strong>Private Local Processing:</strong> Uploaded documents are extracted and analyzed locally without sending confidential files to external third-party servers.
+          </div>
+        </div>
+
+        <div class="analyzer-layout">
+          <!-- Left Controls -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="card">
+              <h3 style="margin-bottom:10px;">Upload a Document</h3>
+              <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload PDF, DOCX, or TXT file">
+                <div class="dropzone-icon" id="dzIcon"></div>
+                <strong style="display:block;color:var(--navy);font-size:14.5px;">Drag &amp; drop or click to upload</strong>
+                <span class="text-xs text-muted">Supports PDF, DOCX, TXT (Max 10 MB · Local only)</span>
+                <input type="file" id="fileInput" accept=".pdf,.docx,.txt" hidden>
+              </div>
+              <div id="fileStatus" class="text-xs mt-2 text-muted"></div>
+              <div class="form-group mt-4 mb-2">
+                <label class="form-label" for="pasteInput">Or Paste Text Directly</label>
+                <textarea class="form-textarea" id="pasteInput" style="min-height:92px;" placeholder="Paste clause excerpts or contract text (min 20 characters)..."></textarea>
+              </div>
+              <button type="button" class="btn btn-primary btn-block" id="analyzeCustomBtn">Analyze Document Text</button>
+            </div>
+
+            <div class="card">
+              <h3 style="margin-bottom:6px;">20 Reference Legal Documents</h3>
+              <p class="text-xs text-muted mb-3">Select any reference document to inspect its full text and structured analysis.</p>
+              <div class="form-group">
+                <label class="form-label" for="sampleSelect">Choose Sample Document</label>
+                <select class="form-select" id="sampleSelect"></select>
+              </div>
+              <button type="button" class="btn btn-outline btn-block" id="loadSampleBtn">Load Sample &amp; Analysis</button>
+            </div>
+          </div>
+
+          <!-- Right Workspace -->
+          <div class="card">
+            <div class="tabs" role="tablist">
+              <button type="button" class="tab-btn active" data-tab="report">Structured Analysis</button>
+              <button type="button" class="tab-btn" data-tab="preview">Document Preview</button>
+              <button type="button" class="tab-btn" data-tab="history">Analysis History (<span id="histCount">0</span>)</button>
+            </div>
+
+            <div id="panel-report"></div>
+            <div id="panel-preview" style="display:none;"></div>
+            <div id="panel-history" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('services');
+    document.getElementById('bc').innerHTML = NDUI.renderBreadcrumbs([{ label: 'Home', href: 'index.html' }, { label: 'Document Analyzer' }]);
+    document.getElementById('anWarnIcon').innerHTML = ndIcon('shield', 18);
+    document.getElementById('dzIcon').innerHTML = ndIcon('upload', 22);
+
+    const samples = NDStore.DocumentService.getSampleDocuments();
+    const sampleSel = document.getElementById('sampleSelect');
+    sampleSel.innerHTML = samples.map(s => `<option value="${NDUI.esc(s.id)}">${NDUI.esc(s.title)} (${NDUI.esc(s.fileType)})</option>`).join('');
+
+    let current = {
+      sourceName: samples[0].title,
+      sourceType: 'Reference Document',
+      previewText: samples[0].text,
+      analysis: samples[0].analysis,
+      isSimulated: false
+    };
+
+    function setTab(tab) {
+      document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      ['report', 'preview', 'history'].forEach(t => {
+        document.getElementById('panel-' + t).style.display = t === tab ? 'block' : 'none';
+      });
+    }
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+
+    function formatPlainReport(item) {
+      const a = item.analysis;
+      return [
+        `NYAYADHEESH DOCUMENT ANALYSIS (${item.sourceType})`,
+        `Document: ${item.sourceName}`,
+        `Document Type: ${a.docType}`,
+        `\nPLAIN-LANGUAGE SUMMARY\n${a.summary}`,
+        `\nIMPORTANT CLAUSES\n${a.importantClauses.map(x => '- ' + x).join('\n')}`,
+        `\nIMPORTANT DATES & TIMELINES\n${a.importantDates.map(x => '- ' + x).join('\n')}`,
+        `\nOBLIGATIONS & RESPONSIBILITIES\n${a.obligations.map(x => '- ' + x).join('\n')}`,
+        `\nPOTENTIAL ISSUES TO REVIEW\n${a.potentialIssues.map(x => '- ' + x).join('\n')}`,
+        `\nQUESTIONS TO DISCUSS WITH A LAWYER\n${a.lawyerQuestions.map((x, i) => `${i + 1}. ${x}`).join('\n')}`,
+        `\nDisclaimer: Informational document analysis only; not formal legal advice.`
+      ].join('\n');
+    }
+
+    function renderWorkspace() {
+      const a = current.analysis;
+      document.getElementById('panel-report').innerHTML = `
+        <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <span class="badge badge-demo">${NDUI.esc(current.sourceType)}</span>
+              <span class="badge badge-navy">${NDUI.esc(a.docType)}</span>
+            </div>
+            <h2 style="margin:0;font-size:1.35rem;">${NDUI.esc(current.sourceName)}</h2>
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-primary btn-sm" id="saveAnBtn">${ndIcon('bookmark', 14)} Save Analysis</button>
+            <button type="button" class="btn btn-outline btn-sm" id="dlAnBtn">${ndIcon('download', 14)} Download Report</button>
+            <button type="button" class="btn btn-outline btn-sm" id="printAnBtn">${ndIcon('printer', 14)} Print / PDF</button>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <h4>${ndIcon('file-text', 16)} Plain-Language Summary</h4>
+          <p class="mb-0" style="color:var(--text-primary);font-size:14.5px;">${NDUI.esc(a.summary)}</p>
+        </div>
+
+        <div class="grid-2" style="gap:14px;">
+          <div class="analysis-block">
+            <h4>${ndIcon('layers', 16)} Important Clauses</h4>
+            <ul>${a.importantClauses.map(c => `<li>${NDUI.esc(c)}</li>`).join('')}</ul>
+          </div>
+          <div class="analysis-block">
+            <h4>${ndIcon('calendar', 16)} Important Dates &amp; Deadlines</h4>
+            <ul>${a.importantDates.map(c => `<li>${NDUI.esc(c)}</li>`).join('')}</ul>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <h4>${ndIcon('check-circle', 16)} Obligations &amp; Responsibilities</h4>
+          <ul>${a.obligations.map(c => `<li>${NDUI.esc(c)}</li>`).join('')}</ul>
+        </div>
+
+        <div class="analysis-block warn">
+          <h4 style="color:var(--error);">${ndIcon('alert-triangle', 16)} Potential Issues to Review</h4>
+          <ul>${a.potentialIssues.map(c => `<li>${NDUI.esc(c)}</li>`).join('')}</ul>
+        </div>
+
+        <div class="analysis-block">
+          <h4>${ndIcon('help-circle', 16)} Questions to Discuss with a Lawyer</h4>
+          <ul>${a.lawyerQuestions.map(c => `<li>${NDUI.esc(c)}</li>`).join('')}</ul>
+          <div class="mt-4">
+            <a href="lawyers.html" class="btn btn-outline btn-sm">Find a Lawyer to Discuss ${ndIcon('arrow-right', 14)}</a>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('saveAnBtn').onclick = () => {
+        NDStore.DocumentService.saveAnalysis(current);
+        NDUI.toast('Analysis saved to your Analysis History & Client Dashboard.', 'success');
+        renderHistory();
+      };
+      document.getElementById('dlAnBtn').onclick = () => {
+        NDUI.downloadTextFile(current.sourceName.replace(/[^\w\s-]/g, '') + '-analysis.txt', formatPlainReport(current));
+        NDUI.toast('Analysis report downloaded.', 'success');
+      };
+      document.getElementById('printAnBtn').onclick = () => NDUI.printDocument('Document Analysis — ' + current.sourceName, formatPlainReport(current));
+
+      document.getElementById('panel-preview').innerHTML = `
+        <div class="flex justify-between items-center mb-3">
+          <h3 style="margin:0;">Document Text Preview</h3>
+          <span class="text-xs text-muted">${NDUI.esc(current.sourceName)}</span>
+        </div>
+        <div class="doc-preview-box">${NDUI.esc(current.previewText)}</div>
+      `;
+    }
+
+    function renderHistory() {
+      const list = NDStore.DocumentService.listAnalyses();
+      document.getElementById('histCount').textContent = list.length;
+      const host = document.getElementById('panel-history');
+      if (!list.length) {
+        host.innerHTML = NDUI.renderEmptyState({ icon: 'file-search', title: 'No Saved Analyses Yet', description: 'Analyze a sample or uploaded document and click Save Analysis to keep it here.' });
+        return;
+      }
+      host.innerHTML = list.map(item => `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <strong style="color:var(--navy);">${NDUI.esc(item.sourceName)}</strong>
+            <div class="text-xs text-muted mt-2">${NDUI.esc(item.analysis.docType)} · ${NDUI.esc(item.sourceType)} · Saved ${NDUI.esc(item.createdAt)}</div>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" class="btn btn-outline btn-sm" data-open-hist="${NDUI.esc(item.id)}">Open</button>
+            <button type="button" class="btn btn-danger-outline btn-sm" data-del-hist="${NDUI.esc(item.id)}">Delete</button>
+          </div>
+        </div>
+      `).join('');
+      host.querySelectorAll('[data-open-hist]').forEach(b => {
+        b.onclick = () => {
+          const found = list.find(x => x.id === b.dataset.openHist);
+          if (found) { current = found; renderWorkspace(); setTab('report'); }
+        };
+      });
+      host.querySelectorAll('[data-del-hist]').forEach(b => {
+        b.onclick = async () => {
+          const ok = await NDUI.confirmDialog({ title: 'Delete Saved Analysis', message: 'Remove this analysis from your history?', confirmText: 'Delete', destructive: true });
+          if (!ok) return;
+          NDStore.DocumentService.deleteAnalysis(b.dataset.delHist);
+          renderHistory();
+          NDUI.toast('Analysis removed.', 'info');
+        };
+      });
+    }
+
+    document.getElementById('loadSampleBtn').onclick = () => {
+      const s = samples.find(x => x.id === sampleSel.value);
+      if (!s) return;
+      current = { sourceName: s.title, sourceType: 'Reference Document', previewText: s.text, analysis: s.analysis, isSimulated: false };
+      renderWorkspace();
+      setTab('report');
+      NDUI.toast(`Loaded sample: ${s.title}`, 'success');
+    };
+
+    async function handleFile(file) {
+      const status = document.getElementById('fileStatus');
+      if (!file) return;
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (!['pdf', 'docx', 'txt'].includes(ext)) {
+        status.innerHTML = `<span style="color:var(--error);">Unsupported file format (.${NDUI.esc(ext)}). Please upload PDF, DOCX, or TXT.</span>`;
+        NDUI.toast('Unsupported file type. Use PDF, DOCX, or TXT.', 'error');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        status.innerHTML = `<span style="color:var(--error);">File exceeds the 10 MB limit.</span>`;
+        NDUI.toast('Maximum file size is 10 MB.', 'error');
+        return;
+      }
+
+      status.textContent = `Extracting text locally from ${file.name}...`;
+      try {
+        let text = '';
+        if (ext === 'txt') {
+          text = await file.text();
+        } else {
+          const fd = new FormData();
+          fd.append('file', file);
+          const r = await fetch('/local/extract', { method: 'POST', body: fd });
+          const j = await r.json();
+          if (!r.ok) throw new Error(j.error || 'Could not extract a readable text layer from this file.');
+          text = j.text;
+        }
+        if (!text || text.trim().length < 20) throw new Error('Extracted text is too short (fewer than 20 characters). Try a text-based PDF/DOCX/TXT.');
+        document.getElementById('pasteInput').value = text.slice(0, 15000);
+        current = {
+          sourceName: file.name,
+          sourceType: 'Uploaded File · Local Analysis',
+          previewText: text,
+          analysis: NDStore.DocumentService.analyzeCustomText(text, file.name),
+          isSimulated: false
+        };
+        status.innerHTML = `<span style="color:var(--success);">Extracted ${file.name} locally (no external upload).</span>`;
+        renderWorkspace();
+        setTab('report');
+        NDUI.toast('Document analysis completed.', 'success');
+      } catch (err) {
+        status.innerHTML = `<span style="color:var(--error);">${NDUI.esc(err.message)}</span>`;
+        NDUI.toast(err.message, 'error');
+      }
+    }
+
+    const dz = document.getElementById('dropzone');
+    const fi = document.getElementById('fileInput');
+    dz.onclick = () => fi.click();
+    dz.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fi.click(); } };
+    dz.ondragover = (e) => { e.preventDefault(); dz.classList.add('dragover'); };
+    dz.ondragleave = () => dz.classList.remove('dragover');
+    dz.ondrop = (e) => { e.preventDefault(); dz.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); };
+    fi.onchange = (e) => handleFile(e.target.files[0]);
+
+    document.getElementById('analyzeCustomBtn').onclick = () => {
+      const txt = document.getElementById('pasteInput').value.trim();
+      if (txt.length < 20) { NDUI.toast('Paste at least 20 characters or upload a PDF/DOCX/TXT file.', 'error'); return; }
+      current = {
+        sourceName: 'Pasted Legal Excerpt',
+        sourceType: 'Pasted Text · Local Analysis',
+        previewText: txt,
+        analysis: NDStore.DocumentService.analyzeCustomText(txt, 'Pasted Text'),
+        isSimulated: false
+      };
+      renderWorkspace();
+      setTab('report');
+      NDUI.toast('Document analysis generated.', 'success');
+    };
+
+    renderWorkspace();
+    renderHistory();
+  </script>
 </body>
 </html>

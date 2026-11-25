@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Legal Consultation — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <style>
+    .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .mode-tile {
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      background: var(--surface);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .mode-tile.active { border-color: var(--navy); background: var(--gold-soft); }
+    .mode-tile:disabled { opacity: 0.45; cursor: not-allowed; }
+    .slot-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .slot-pill {
+      padding: 11px 8px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--navy);
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .slot-pill.active { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
+    .slot-pill:disabled { background: var(--surface-muted); color: #94A3B8; text-decoration: line-through; cursor: not-allowed; }
+    .summary-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .summary-row:last-child { border-bottom: 0; }
+    @media (max-width: 640px) {
+      .mode-grid { grid-template-columns: 1fr; }
+      .slot-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div id="bc"></div>
+        <span class="eyebrow">Appointment Scheduling</span>
+        <h1>Book a Legal Consultation</h1>
+        <p>Select a lawyer profile, choose a consultation type and open time slot, review the fee summary, and manage your appointments live.</p>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div id="stepperHost"></div>
+
+        <div class="grid-2" style="grid-template-columns:1.35fr 0.75fr;align-items:start;">
+          <div class="card" id="wizardHost"></div>
+
+          <aside class="card" id="summaryHost"></aside>
+        </div>
+
+        <div class="card mt-6">
+          <div class="flex justify-between items-center flex-wrap gap-2 mb-4">
+            <h3 style="margin:0;">Your Recent Appointments</h3>
+            <a href="Dashboard.html#appointments" class="btn btn-outline btn-sm">Manage All in Dashboard</a>
+          </div>
+          <div id="recentBookingsHost"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('services');
+    document.getElementById('bc').innerHTML = NDUI.renderBreadcrumbs([
+      { label: 'Home', href: 'index.html' },
+      { label: 'Find Lawyers', href: 'lawyers.html' },
+      { label: 'Book Consultation' }
+    ]);
+
+    const STEPS = ['Select Lawyer', 'Schedule', 'Case Details', 'Review', 'Confirmed'];
+    const lawyers = NDStore.LawyerService.listAll();
+    const qp = new URLSearchParams(location.search);
+
+    const draft = {
+      step: qp.get('lawyer') ? 1 : 0,
+      lawyerId: qp.get('lawyer') && NDStore.LawyerService.getById(qp.get('lawyer')) ? qp.get('lawyer') : lawyers[0].id,
+      mode: qp.get('mode') || '',
+      date: qp.get('date') || NDSeed.isoDay(2),
+      slot: qp.get('slot') || '',
+      caseSummary: '',
+      confirmedAppt: null,
+      lawyerFilter: ''
+    };
+
+    function getLawyer() {
+      return NDStore.LawyerService.getById(draft.lawyerId) || lawyers[0];
+    }
+
+    function renderSummary() {
+      const l = getLawyer();
+      document.getElementById('summaryHost').innerHTML = `
+        <div class="flex justify-between items-center mb-3">
+          <h3 style="margin:0;">Booking Summary</h3>
+          <span class="badge badge-demo">Instant Slot</span>
+        </div>
+        <div class="summary-row"><span class="text-muted">Lawyer</span><strong>${NDUI.esc(l.name)}</strong></div>
+        <div class="summary-row"><span class="text-muted">Practice Area</span><span>${NDUI.esc(l.primaryArea)}</span></div>
+        <div class="summary-row"><span class="text-muted">City</span><span>${NDUI.esc(l.city)}</span></div>
+        <div class="summary-row"><span class="text-muted">Consultation Type</span><span>${NDUI.esc(draft.mode || l.modes[0])}</span></div>
+        <div class="summary-row"><span class="text-muted">Date &amp; Time</span><span>${NDUI.esc(draft.date)} ${draft.slot ? '· ' + NDUI.esc(draft.slot) + ' IST' : '(pick slot)'}</span></div>
+        <div class="summary-row"><span class="text-muted">Consultation Fee</span><strong>₹${l.fee.toLocaleString('en-IN')}</strong></div>
+        <div class="disclaimer-box mt-4" style="font-size:12.5px;">
+          ${ndIcon('info', 16)}
+          <div>Payable directly upon session confirmation; free rescheduling up to 12 hours prior.</div>
+        </div>
+      `;
+    }
+
+    function renderWizard() {
+      document.getElementById('stepperHost').innerHTML = NDUI.renderStepper(STEPS, draft.step);
+      renderSummary();
+
+      const host = document.getElementById('wizardHost');
+      const l = getLawyer();
+      if (!draft.mode || !l.modes.includes(draft.mode)) draft.mode = l.modes[0];
+
+      if (draft.step === 0) {
+        const filtered = lawyers.filter(x => {
+          const q = draft.lawyerFilter.trim().toLowerCase();
+          return !q || `${x.name} ${x.city} ${x.primaryArea}`.toLowerCase().includes(q);
+        }).slice(0, 12);
+
+        host.innerHTML = `
+          <h2 style="font-size:1.4rem;margin-bottom:6px;">Step 1: Select a Lawyer</h2>
+          <p class="text-sm mb-4">Choose from 108 advocate profiles or browse the full <a href="lawyers.html" style="text-decoration:underline;">Lawyer Directory</a>.</p>
+          <div class="form-group">
+            <input class="form-control" id="lwQuickSearch" value="${NDUI.esc(draft.lawyerFilter)}" placeholder="Search by name, city, or practice area...">
+          </div>
+          <div style="display:grid;gap:10px;max-height:380px;overflow-y:auto;margin-bottom:18px;">
+            ${filtered.map(x => `
+              <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid ${x.id === draft.lawyerId ? 'var(--navy)' : 'var(--border)'};background:${x.id === draft.lawyerId ? 'var(--gold-soft)' : 'var(--surface)'};border-radius:10px;cursor:pointer;">
+                <span style="display:flex;align-items:center;gap:10px;">
+                  <input type="radio" name="pickLawyer" value="${NDUI.esc(x.id)}" ${x.id === draft.lawyerId ? 'checked' : ''}>
+                  <span>
+                    <strong style="display:block;color:var(--navy);">${NDUI.esc(x.name)}</strong>
+                    <span class="text-xs text-muted">${NDUI.esc(x.primaryArea)} · ${NDUI.esc(x.city)} · ${x.experience} yrs</span>
+                  </span>
+                </span>
+                <strong style="color:var(--navy);">₹${x.fee.toLocaleString('en-IN')}</strong>
+              </label>
+            `).join('')}
+          </div>
+          <div class="flex justify-between">
+            <a href="lawyers.html" class="btn btn-outline">Full Directory</a>
+            <button type="button" class="btn btn-primary" id="step0Next">Continue to Schedule ${ndIcon('arrow-right', 15)}</button>
+          </div>
+        `;
+        document.getElementById('lwQuickSearch').oninput = (e) => { draft.lawyerFilter = e.target.value; renderWizard(); };
+        host.querySelectorAll('input[name="pickLawyer"]').forEach(r => r.onchange = () => {
+          draft.lawyerId = r.value;
+          draft.slot = '';
+          renderSummary();
+          renderWizard();
+        });
+        document.getElementById('step0Next').onclick = () => { draft.step = 1; renderWizard(); };
+        return;
+      }
+
+      if (draft.step === 1) {
+        const booked = NDStore.AppointmentService.getBookedSlots(l.id, draft.date);
+        const allModes = [
+          { key: 'Video', icon: 'video', sub: 'Online video consultation' },
+          { key: 'Phone', icon: 'phone', sub: 'Scheduled phone callback' },
+          { key: 'In-Person', icon: 'building', sub: `Chamber office (${l.city})` }
+        ];
+
+        host.innerHTML = `
+          <h2 style="font-size:1.4rem;margin-bottom:6px;">Step 2: Select Type, Date &amp; Time Slot</h2>
+          <p class="text-sm mb-4">Scheduling with <strong>${NDUI.esc(l.name)}</strong> (${NDUI.esc(l.primaryArea)}).</p>
+
+          <div class="form-group">
+            <label class="form-label">Consultation Type</label>
+            <div class="mode-grid">
+              ${allModes.map(m => {
+                const supported = l.modes.includes(m.key);
+                return `
+                  <button type="button" class="mode-tile ${draft.mode === m.key ? 'active' : ''}" data-mode="${m.key}" ${supported ? '' : 'disabled'}>
+                    <div style="color:var(--navy);margin-bottom:6px;">${ndIcon(m.icon, 20)}</div>
+                    <strong style="display:block;font-size:14px;color:var(--navy);">${m.key}</strong>
+                    <span class="text-xs text-muted">${supported ? m.sub : 'Unavailable for profile'}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="bkDate">Consultation Date</label>
+            <input class="form-control" type="date" id="bkDate" value="${NDUI.esc(draft.date)}" min="${NDSeed.isoDay(1)}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Available Slots (IST) — Booked slots are locked automatically</label>
+            <div class="slot-row">
+              ${l.slots.map(s => {
+                const taken = booked.includes(s);
+                return `<button type="button" class="slot-pill ${draft.slot === s && !taken ? 'active' : ''}" data-slot="${NDUI.esc(s)}" ${taken ? 'disabled' : ''}>${NDUI.esc(s)}${taken ? ' · Taken' : ''}</button>`;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="flex justify-between mt-4">
+            <button type="button" class="btn btn-outline" id="s1Back">Back</button>
+            <button type="button" class="btn btn-primary" id="s1Next">Continue to Case Details ${ndIcon('arrow-right', 15)}</button>
+          </div>
+        `;
+        host.querySelectorAll('.mode-tile:not(:disabled)').forEach(b => b.onclick = () => { draft.mode = b.dataset.mode; renderWizard(); });
+        document.getElementById('bkDate').onchange = (e) => { draft.date = e.target.value; draft.slot = ''; renderWizard(); };
+        host.querySelectorAll('.slot-pill:not(:disabled)').forEach(b => b.onclick = () => { draft.slot = b.dataset.slot; renderWizard(); });
+        document.getElementById('s1Back').onclick = () => { draft.step = 0; renderWizard(); };
+        document.getElementById('s1Next').onclick = () => {
+          if (!draft.date) { NDUI.toast('Please select a valid date.', 'error'); return; }
+          if (!draft.slot) { NDUI.toast('Please choose an available time slot.', 'error'); return; }
+          draft.step = 2;
+          renderWizard();
+        };
+        return;
+      }
+
+      if (draft.step === 2) {
+        host.innerHTML = `
+          <h2 style="font-size:1.4rem;margin-bottom:6px;">Step 3: Enter Case Details</h2>
+          <p class="text-sm mb-4">Share a brief overview of your legal question to help the advocate prepare for your consultation.</p>
+          <div class="form-group">
+            <label class="form-label" for="bkSummary">Matter Overview <span class="req">*</span></label>
+            <textarea class="form-textarea" id="bkSummary" placeholder="e.g. Looking to review a residential rent agreement notice period and security deposit refund terms...">${NDUI.esc(draft.caseSummary)}</textarea>
+            <div class="form-help">Minimum 10 characters required.</div>
+          </div>
+          <div class="flex gap-2 flex-wrap mb-4">
+            <button type="button" class="btn btn-outline btn-sm" id="fillDemoCase">Fill Sample Summary</button>
+          </div>
+          <div class="flex justify-between mt-4">
+            <button type="button" class="btn btn-outline" id="s2Back">Back</button>
+            <button type="button" class="btn btn-primary" id="s2Next">Review Booking ${ndIcon('arrow-right', 15)}</button>
+          </div>
+        `;
+        document.getElementById('fillDemoCase').onclick = () => {
+          draft.caseSummary = `Seeking general consultation on ${l.primaryArea.toLowerCase()} documentation, procedural timelines, and preparation checklist prior to formal steps.`;
+          document.getElementById('bkSummary').value = draft.caseSummary;
+        };
+        document.getElementById('s2Back').onclick = () => { draft.caseSummary = document.getElementById('bkSummary').value; draft.step = 1; renderWizard(); };
+        document.getElementById('s2Next').onclick = () => {
+          draft.caseSummary = document.getElementById('bkSummary').value.trim();
+          if (draft.caseSummary.length < 10) { NDUI.toast('Please describe your matter in at least 10 characters.', 'error'); return; }
+          draft.step = 3;
+          renderWizard();
+        };
+        return;
+      }
+
+      if (draft.step === 3) {
+        host.innerHTML = `
+          <h2 style="font-size:1.4rem;margin-bottom:6px;">Step 4: Review &amp; Confirm Appointment</h2>
+          <p class="text-sm mb-4">Double-check all details below before confirming your appointment.</p>
+
+          <div class="summary-row"><span class="text-muted">Lawyer</span><strong>${NDUI.esc(l.name)} (${NDUI.esc(l.primaryArea)})</strong></div>
+          <div class="summary-row"><span class="text-muted">Consultation Type</span><strong>${NDUI.esc(draft.mode)}</strong></div>
+          <div class="summary-row"><span class="text-muted">Scheduled Date &amp; Time</span><strong>${NDUI.esc(draft.date)} at ${NDUI.esc(draft.slot)} IST</strong></div>
+          <div class="summary-row"><span class="text-muted">Consultation Fee</span><strong>₹${l.fee.toLocaleString('en-IN')}</strong></div>
+          <div class="mt-4 mb-4" style="background:var(--ivory);padding:14px;border-radius:10px;border:1px solid var(--border);">
+            <div class="text-xs text-muted" style="font-weight:600;margin-bottom:4px;">MATTER SUMMARY</div>
+            <p class="text-sm mb-0" style="color:var(--text-primary);">${NDUI.esc(draft.caseSummary)}</p>
+          </div>
+
+          <div class="flex justify-between mt-4">
+            <button type="button" class="btn btn-outline" id="s3Back">Back</button>
+            <button type="button" class="btn btn-gold" id="confirmBtn">${ndIcon('check-circle', 16)} Confirm Appointment</button>
+          </div>
+        `;
+        document.getElementById('s3Back').onclick = () => { draft.step = 2; renderWizard(); };
+        document.getElementById('confirmBtn').onclick = () => {
+          try {
+            if (!NDStore.AuthService.isAuthenticated()) NDStore.AuthService.demoLogin();
+            draft.confirmedAppt = NDStore.AppointmentService.create({
+              lawyerId: l.id,
+              mode: draft.mode,
+              date: draft.date,
+              slot: draft.slot,
+              caseSummary: draft.caseSummary
+            });
+            draft.step = 4;
+            NDUI.toast(`Appointment confirmed (${draft.confirmedAppt.id})!`, 'success');
+            renderWizard();
+            renderRecentBookings();
+          } catch (err) {
+            NDUI.toast(err.message, 'error');
+          }
+        };
+        return;
+      }
+
+      const appt = draft.confirmedAppt;
+      host.innerHTML = `
+        <div style="text-align:center;padding:12px 0;">
+          <div style="width:56px;height:56px;border-radius:50%;background:var(--success-bg);color:var(--success);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;">
+            ${ndIcon('check-circle', 30)}
+          </div>
+          <span class="badge badge-success mb-2">Reference ID: ${NDUI.esc(appt.id)}</span>
+          <h2 style="margin:8px 0;">Appointment Confirmed</h2>
+          <p class="mb-4">Scheduled with <strong>${NDUI.esc(appt.lawyerName)}</strong> (${NDUI.esc(appt.mode)}) on <strong>${NDUI.esc(appt.date)} at ${NDUI.esc(appt.slot)} IST</strong>. It is now visible in your Client Dashboard.</p>
+          <div class="flex gap-2 flex-wrap" style="justify-content:center;">
+            <button type="button" class="btn btn-outline" id="dlIcsBtn">${ndIcon('download', 15)} Download Calendar (.ics)</button>
+            <a href="Dashboard.html#appointments" class="btn btn-primary">Open My Appointments</a>
+            <button type="button" class="btn btn-ghost" id="bookAnotherBtn">Book Another Slot</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('dlIcsBtn').onclick = () => NDUI.downloadIcs(appt);
+      document.getElementById('bookAnotherBtn').onclick = () => {
+        draft.step = 0; draft.slot = ''; draft.caseSummary = ''; draft.confirmedAppt = null;
+        renderWizard();
+      };
+    }
+
+    function renderRecentBookings() {
+      const list = NDStore.AppointmentService.list().slice(0, 5);
+      const host = document.getElementById('recentBookingsHost');
+      host.innerHTML = `
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Ref ID</th><th>Lawyer</th><th>Date &amp; Slot</th><th>Mode</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              ${list.map(a => `
+                <tr>
+                  <td><strong>${NDUI.esc(a.id)}</strong></td>
+                  <td>${NDUI.esc(a.lawyerName)}<div class="text-xs text-muted">${NDUI.esc(a.practiceArea)}</div></td>
+                  <td>${NDUI.esc(a.date)} · ${NDUI.esc(a.slot)} IST</td>
+                  <td>${NDUI.esc(a.mode)}</td>
+                  <td>${NDUI.statusBadge(a.status)}</td>
+                  <td>
+                    <div class="flex gap-2">
+                      ${!['Cancelled', 'Completed'].includes(a.status) ? `
+                        <button type="button" class="btn btn-outline btn-sm" data-resched="${NDUI.esc(a.id)}">Reschedule</button>
+                        <button type="button" class="btn btn-danger-outline btn-sm" data-cancel="${NDUI.esc(a.id)}">Cancel</button>
+                      ` : `<span class="text-xs text-muted">—</span>`}
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      host.querySelectorAll('[data-cancel]').forEach(btn => {
+        btn.onclick = async () => {
+          const ok = await NDUI.confirmDialog({
+            title: 'Cancel Appointment',
+            message: `Are you sure you want to cancel appointment ${btn.dataset.cancel}?`,
+            confirmText: 'Yes, Cancel',
+            destructive: true
+          });
+          if (!ok) return;
+          NDStore.AppointmentService.cancel(btn.dataset.cancel);
+          NDUI.toast('Appointment cancelled.', 'info');
+          renderRecentBookings();
+          if (draft.step === 1) renderWizard();
+        };
+      });
+      host.querySelectorAll('[data-resched]').forEach(btn => {
+        btn.onclick = () => {
+          const appt = NDStore.AppointmentService.list().find(x => x.id === btn.dataset.resched);
+          const l = NDStore.LawyerService.getById(appt.lawyerId);
+          const bd = NDUI.openModal({
+            title: `Reschedule ${appt.id}`,
+            bodyHtml: `
+              <form id="rsForm">
+                <div class="form-group"><label class="form-label">New Date</label><input class="form-control" type="date" id="rsDate" value="${NDUI.esc(NDSeed.isoDay(5))}" min="${NDSeed.isoDay(1)}" required></div>
+                <div class="form-group"><label class="form-label">New Time Slot (IST)</label><select class="form-select" id="rsSlot">${(l?.slots || ['10:00', '14:00', '16:00']).map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                <button type="submit" class="btn btn-primary btn-block">Save New Time</button>
+              </form>
+            `
+          });
+          bd.querySelector('#rsForm').onsubmit = (e) => {
+            e.preventDefault();
+            try {
+              NDStore.AppointmentService.reschedule(appt.id, { date: bd.querySelector('#rsDate').value, slot: bd.querySelector('#rsSlot').value });
+              NDUI.closeModal();
+              NDUI.toast('Appointment rescheduled.', 'success');
+              renderRecentBookings();
+            } catch (err) { NDUI.toast(err.message, 'error'); }
+          };
+        };
+      });
+    }
+
+    renderWizard();
+    renderRecentBookings();
+  </script>
+</body>
+</html>

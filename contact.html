@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact &amp; Enquiries — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div id="bc"></div>
+        <span class="eyebrow">Contact &amp; Support</span>
+        <h1>Get in Touch with the NyayaDheesh Team</h1>
+        <p>Submit an enquiry below. All enquiries validate cleanly and persist in your submission log.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="grid-2" style="align-items:start;">
+          <form class="card" id="contactForm" novalidate>
+            <h2 style="font-size:1.45rem;margin-bottom:6px;">Send an Enquiry</h2>
+            <p class="text-sm mb-4">Fields marked with * are required.</p>
+
+            <div class="form-group">
+              <label class="form-label" for="cName">Full Name <span class="req">*</span></label>
+              <input class="form-control" id="cName" required placeholder="e.g. Aarav Mehta">
+              <div class="form-error">Please enter your full name (at least 2 characters).</div>
+            </div>
+            <div class="grid-2" style="gap:14px;">
+              <div class="form-group">
+                <label class="form-label" for="cEmail">Email Address <span class="req">*</span></label>
+                <input class="form-control" id="cEmail" type="email" required placeholder="name@example.com">
+                <div class="form-error">Please enter a valid email address.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cPhone">Phone Number (Optional)</label>
+                <input class="form-control" id="cPhone" type="tel" placeholder="10-digit mobile number">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="cCategory">Enquiry Category <span class="req">*</span></label>
+              <select class="form-select" id="cCategory" required>
+                <option value="">Choose a category</option>
+                <option>General Platform Enquiry</option>
+                <option>Document Analyzer &amp; Generator</option>
+                <option>Lawyer Directory &amp; Consultation</option>
+                <option>Mediation Workflow</option>
+                <option>Feedback &amp; Suggestions</option>
+              </select>
+              <div class="form-error">Please select an enquiry category.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="cMessage">Message <span class="req">*</span></label>
+              <textarea class="form-textarea" id="cMessage" required placeholder="Write your question or feedback (minimum 10 characters)..."></textarea>
+              <div class="form-error">Please enter at least 10 characters.</div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="cSubmit">Submit Enquiry</button>
+            <div id="cConfirm" class="mt-4" style="display:none;"></div>
+          </form>
+
+          <div>
+            <div class="disclaimer-box mb-4">
+              <span id="cWarnIcon"></span>
+              <div>
+                <strong>Privacy &amp; Enquiry Log:</strong> Enquiries submitted here are saved to your session log so you can track submissions across visits. Please avoid sharing confidential personal identifiers in general support messages.
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="flex justify-between items-center mb-4">
+                <h3 style="margin:0;">Recent Enquiries</h3>
+                <span class="badge badge-navy" id="enqCount">0 saved</span>
+              </div>
+              <div id="enqList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('contact');
+    document.getElementById('bc').innerHTML = NDUI.renderBreadcrumbs([{ label: 'Home', href: 'index.html' }, { label: 'Contact' }]);
+    document.getElementById('cWarnIcon').innerHTML = ndIcon('info', 18);
+
+    const session = NDStore.AuthService.getSession();
+    if (session) {
+      document.getElementById('cName').value = session.name || '';
+      document.getElementById('cEmail').value = session.email || '';
+    }
+
+    function renderEnquiries() {
+      const list = NDStore.ContactService.list();
+      document.getElementById('enqCount').textContent = `${list.length} saved`;
+      const host = document.getElementById('enqList');
+      if (!list.length) {
+        host.innerHTML = NDUI.renderEmptyState({
+          icon: 'mail',
+          title: 'No Enquiries Yet',
+          description: 'Submit the form on the left to test validation, confirmation feedback, and local persistence.'
+        });
+        return;
+      }
+      host.innerHTML = list.map(e => `
+        <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+          <div class="flex justify-between items-center gap-2 flex-wrap">
+            <strong style="color:var(--navy);font-size:14px;">${NDUI.esc(e.category)}</strong>
+            <span class="badge badge-success">${NDUI.esc(e.id)}</span>
+          </div>
+          <div class="text-xs text-muted mt-2">${NDUI.esc(e.name)} · ${NDUI.esc(e.email)} · ${NDUI.esc(e.createdAt)}</div>
+          <p class="text-sm mt-2 mb-0" style="color:var(--text-primary);">${NDUI.esc(e.message)}</p>
+        </div>
+      `).join('');
+    }
+    renderEnquiries();
+
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const checks = [
+        ['cName', v => v.trim().length >= 2],
+        ['cEmail', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())],
+        ['cCategory', v => Boolean(v)],
+        ['cMessage', v => v.trim().length >= 10]
+      ];
+      let okAll = true;
+      for (const [id, fn] of checks) {
+        const el = document.getElementById(id);
+        const ok = fn(el.value);
+        el.closest('.form-group').classList.toggle('has-error', !ok);
+        if (!ok) okAll = false;
+      }
+      if (!okAll) return;
+
+      const btn = document.getElementById('cSubmit');
+      btn.disabled = true;
+      btn.textContent = 'Recording Enquiry...';
+      setTimeout(() => {
+        try {
+          const item = NDStore.ContactService.submit({
+            name: document.getElementById('cName').value,
+            email: document.getElementById('cEmail').value,
+            phone: document.getElementById('cPhone').value,
+            category: document.getElementById('cCategory').value,
+            message: document.getElementById('cMessage').value
+          });
+          e.target.reset();
+          const box = document.getElementById('cConfirm');
+          box.style.display = 'block';
+          box.innerHTML = `<div class="disclaimer-box" style="background:var(--success-bg);border-color:#BBF7D0;border-left-color:var(--success);">${ndIcon('check-circle', 18)}<div><strong>Enquiry Confirmed (${NDUI.esc(item.id)}):</strong> Saved in your enquiry log.</div></div>`;
+          NDUI.toast('Enquiry submitted successfully.', 'success');
+          renderEnquiries();
+        } catch (err) {
+          NDUI.toast(err.message, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Submit Enquiry';
+        }
+      }, 300);
+    });
+  </script>
+</body>
+</html>

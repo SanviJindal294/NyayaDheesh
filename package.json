@@ -1,0 +1,1 @@
+{"name":"nyayadheesh-local","version":"1.0.0","private":true,"engines":{"node":">=24"},"scripts":{"postinstall":"npm --prefix Backend install --no-audit --no-fund","start":"node start-local.js","seed":"node Backend/seed.js","test":"node Backend/check.js"}}

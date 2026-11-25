@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case &amp; Judgment Simulator — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <style>
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 420px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .report-section {
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--navy);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+    .report-section h4 { margin: 0 0 8px; display: flex; align-items: center; gap: 7px; }
+    .report-section ul { margin: 0; padding-left: 18px; font-size: 14px; color: var(--text-primary); }
+    .report-section li { margin-bottom: 6px; }
+    @media (max-width: 980px) { .sim-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div id="bc"></div>
+        <span class="eyebrow">Structured Case Exploration</span>
+        <h1>Case &amp; Judgment Simulator</h1>
+        <p>Explore 15 reference case scenarios or enter your own case summary to map key legal questions, possible arguments, missing information, and consultation topics.</p>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="disclaimer-box mb-6">
+          <span id="simWarn"></span>
+          <div>
+            <strong>Legal Preparation Notice:</strong> This tool generates structured discussion frameworks from case facts—it does not fabricate court judgments or guarantee legal outcomes. Always verify strategy with a qualified advocate.
+          </div>
+        </div>
+
+        <div class="sim-layout">
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="card">
+              <h3 style="margin-bottom:6px;">15 Reference Case Scenarios</h3>
+              <p class="text-xs text-muted mb-3">Load any reference scenario to view a complete structured case exploration report.</p>
+              <div class="form-group">
+                <label class="form-label" for="sampleCaseSel">Select Reference Case</label>
+                <select class="form-select" id="sampleCaseSel"></select>
+              </div>
+              <button type="button" class="btn btn-outline btn-block" id="loadSampleCaseBtn">Load Case Scenario</button>
+            </div>
+
+            <form class="card" id="customCaseForm" novalidate>
+              <h3 style="margin-bottom:10px;">Explore Custom Scenario</h3>
+              <div class="form-group">
+                <label class="form-label" for="csTitle">Case Title <span class="req">*</span></label>
+                <input class="form-control" id="csTitle" required placeholder="e.g. Delayed Vendor Delivery Dispute">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="csCat">Case Category <span class="req">*</span></label>
+                <select class="form-select" id="csCat">
+                  <option>Property &amp; Tenancy</option>
+                  <option>Consumer Complaints</option>
+                  <option>Contract Disputes</option>
+                  <option>Employment Disputes</option>
+                  <option>Business Disputes</option>
+                  <option>Family Matters</option>
+                  <option>Civil Matters</option>
+                  <option>Cybercrime Concerns</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="csSit">Situation Description <span class="req">*</span></label>
+                <textarea class="form-textarea" id="csSit" required placeholder="Describe what happened (min 20 characters)..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="csFacts">Relevant Facts &amp; Dates</label>
+                <textarea class="form-textarea" id="csFacts" style="min-height:74px;" placeholder="Timeline, key communications, amounts..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="csDocs">Supporting Documents Available</label>
+                <input class="form-control" id="csDocs" placeholder="e.g. Signed agreement, invoices, emails">
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Generate Case Exploration</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="tabs">
+              <button type="button" class="tab-btn active" data-tab="report">Analysis Report</button>
+              <button type="button" class="tab-btn" data-tab="history">Saved Case History (<span id="caseHistCount">0</span>)</button>
+            </div>
+            <div id="tab-report"></div>
+            <div id="tab-history" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('services');
+    document.getElementById('bc').innerHTML = NDUI.renderBreadcrumbs([{ label: 'Home', href: 'index.html' }, { label: 'Case & Judgment Simulator' }]);
+    document.getElementById('simWarn').innerHTML = ndIcon('shield-alert', 18);
+
+    const samples = NDStore.CaseService.listSamples();
+    const sel = document.getElementById('sampleCaseSel');
+    sel.innerHTML = samples.map(s => `<option value="${NDUI.esc(s.id)}">${NDUI.esc(s.title)} (${NDUI.esc(s.category)})</option>`).join('');
+
+    let activeCase = { ...samples[0] };
+
+    function setTab(t) {
+      document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+      document.getElementById('tab-report').style.display = t === 'report' ? 'block' : 'none';
+      document.getElementById('tab-history').style.display = t === 'history' ? 'block' : 'none';
+    }
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+
+    function populateFormFrom(c) {
+      document.getElementById('csTitle').value = c.title || '';
+      document.getElementById('csCat').value = c.category || 'Contract Disputes';
+      document.getElementById('csSit').value = c.situation || '';
+      document.getElementById('csFacts').value = c.facts || '';
+      document.getElementById('csDocs').value = c.documents || '';
+    }
+
+    function reportAsText(c) {
+      const r = c.report;
+      return [
+        `NYAYADHEESH CASE EXPLORATION REPORT`,
+        `Title: ${c.title} | Category: ${c.category}`,
+        `\nCASE OVERVIEW\n${r.overview}`,
+        `\nKEY LEGAL QUESTIONS\n${r.legalQuestions.map((x, i) => `${i + 1}. ${x}`).join('\n')}`,
+        `\nPOSSIBLE ARGUMENTS — CLAIMANT PERSPECTIVE\n${r.possibleArguments.claimant.map(x => '- ' + x).join('\n')}`,
+        `\nPOSSIBLE ARGUMENTS — RESPONDENT PERSPECTIVE\n${r.possibleArguments.respondent.map(x => '- ' + x).join('\n')}`,
+        `\nMISSING INFORMATION TO GATHER\n${r.missingInfo.map(x => '- ' + x).join('\n')}`,
+        `\nRELEVANT RESEARCH AREAS\n${r.researchAreas.map(x => '- ' + x).join('\n')}`,
+        `\nPOTENTIAL CONSIDERATIONS\n${r.considerations.map(x => '- ' + x).join('\n')}`,
+        `\nSUGGESTED QUESTIONS FOR LEGAL CONSULTATION\n${r.consultationQuestions.map((x, i) => `${i + 1}. ${x}`).join('\n')}`
+      ].join('\n');
+    }
+
+    function renderReport() {
+      const r = activeCase.report;
+      document.getElementById('tab-report').innerHTML = `
+        <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <span class="badge badge-demo">Case Exploration</span>
+              <span class="badge badge-navy">${NDUI.esc(activeCase.category)}</span>
+            </div>
+            <h2 style="margin:0;font-size:1.35rem;">${NDUI.esc(activeCase.title)}</h2>
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-primary btn-sm" id="saveCaseBtn">${ndIcon('bookmark', 14)} Save Report</button>
+            <button type="button" class="btn btn-outline btn-sm" id="dlCaseBtn">${ndIcon('download', 14)} Download</button>
+            <button type="button" class="btn btn-outline btn-sm" id="printCaseBtn">${ndIcon('printer', 14)} Print / PDF</button>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h4>${ndIcon('file-text', 16)} Case Overview</h4>
+          <p class="mb-0" style="color:var(--text-primary);font-size:14.5px;">${NDUI.esc(r.overview)}</p>
+        </div>
+
+        <div class="report-section">
+          <h4>${ndIcon('help-circle', 16)} Key Legal Questions</h4>
+          <ul>${r.legalQuestions.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>
+        </div>
+
+        <div class="grid-2" style="gap:14px;">
+          <div class="report-section">
+            <h4>${ndIcon('check-circle', 16)} Possible Arguments (Claimant Side)</h4>
+            <ul>${r.possibleArguments.claimant.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>
+          </div>
+          <div class="report-section">
+            <h4>${ndIcon('shield', 16)} Possible Arguments (Respondent Side)</h4>
+            <ul>${r.possibleArguments.respondent.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap:14px;">
+          <div class="report-section">
+            <h4>${ndIcon('alert-triangle', 16)} Missing Information to Clarify</h4>
+            <ul>${r.missingInfo.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>
+          </div>
+          <div class="report-section">
+            <h4>${ndIcon('compass', 16)} Relevant Research Areas</h4>
+            <ul>${r.researchAreas.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h4>${ndIcon('info', 16)} Potential Considerations</h4>
+          <ul>${r.considerations.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>
+        </div>
+
+        <div class="report-section">
+          <h4>${ndIcon('users', 16)} Suggested Questions for Legal Consultation</h4>
+          <ul>${r.consultationQuestions.map(x => `<li>${NDUI.esc(x)}</li>`).join('')}</ul>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <a href="lawyers.html" class="btn btn-primary btn-sm">Find a Lawyer</a>
+            <a href="Mediators.html" class="btn btn-outline btn-sm">Explore Mediation</a>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('saveCaseBtn').onclick = () => {
+        NDStore.CaseService.saveCase(activeCase);
+        NDUI.toast('Case exploration saved to Case Analysis History & Dashboard!', 'success');
+        renderHistory();
+      };
+      document.getElementById('dlCaseBtn').onclick = () => {
+        NDUI.downloadTextFile(activeCase.title.replace(/[^\w\s-]/g, '') + '-exploration.txt', reportAsText(activeCase));
+        NDUI.toast('Case brief downloaded.', 'success');
+      };
+      document.getElementById('printCaseBtn').onclick = () => NDUI.printDocument(activeCase.title, reportAsText(activeCase));
+    }
+
+    function renderHistory() {
+      const list = NDStore.CaseService.listHistory();
+      document.getElementById('caseHistCount').textContent = list.length;
+      const host = document.getElementById('tab-history');
+      if (!list.length) {
+        host.innerHTML = NDUI.renderEmptyState({ icon: 'briefcase', title: 'No Saved Case Reports', description: 'Explore a sample or custom case and click Save Report to store it here.' });
+        return;
+      }
+      host.innerHTML = list.map(c => `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <strong style="color:var(--navy);">${NDUI.esc(c.title)}</strong>
+            <div class="text-xs text-muted mt-2">${NDUI.esc(c.category)} · Saved ${NDUI.esc(c.createdAt)}</div>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" class="btn btn-outline btn-sm" data-open-c="${NDUI.esc(c.id)}">Open</button>
+            <button type="button" class="btn btn-danger-outline btn-sm" data-del-c="${NDUI.esc(c.id)}">Delete</button>
+          </div>
+        </div>
+      `).join('');
+      host.querySelectorAll('[data-open-c]').forEach(b => b.onclick = () => {
+        const found = list.find(x => x.id === b.dataset.openC);
+        if (found) { activeCase = found; populateFormFrom(found); renderReport(); setTab('report'); }
+      });
+      host.querySelectorAll('[data-del-c]').forEach(b => b.onclick = async () => {
+        const ok = await NDUI.confirmDialog({ title: 'Delete Case Report', message: 'Remove this saved case exploration?', confirmText: 'Delete', destructive: true });
+        if (!ok) return;
+        NDStore.CaseService.deleteCase(b.dataset.delC);
+        renderHistory();
+        NDUI.toast('Case report removed.', 'info');
+      });
+    }
+
+    document.getElementById('loadSampleCaseBtn').onclick = () => {
+      const s = samples.find(x => x.id === sel.value);
+      if (!s) return;
+      activeCase = { ...s };
+      populateFormFrom(s);
+      renderReport();
+      setTab('report');
+      NDUI.toast(`Loaded scenario: ${s.title}`, 'info');
+    };
+
+    document.getElementById('customCaseForm').onsubmit = (e) => {
+      e.preventDefault();
+      try {
+        const payload = {
+          title: document.getElementById('csTitle').value,
+          category: document.getElementById('csCat').value,
+          situation: document.getElementById('csSit').value,
+          facts: document.getElementById('csFacts').value,
+          documents: document.getElementById('csDocs').value
+        };
+        const report = NDStore.CaseService.exploreCustomCase(payload);
+        activeCase = { ...payload, report };
+        renderReport();
+        setTab('report');
+        NDUI.toast('Case exploration generated.', 'success');
+      } catch (err) {
+        NDUI.toast(err.message, 'error');
+      }
+    };
+
+    populateFormFrom(activeCase);
+    renderReport();
+    renderHistory();
+  </script>
+</body>
+</html>

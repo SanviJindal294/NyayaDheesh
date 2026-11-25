@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal Services — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <script>
+    (function () {
+      const v = new URLSearchParams(location.search).get('view');
+      if (v === 'directory') location.replace('lawyers.html');
+      else if (v === 'booking') location.replace('booking.html');
+      else if (v === 'simulator') location.replace('simulator.html');
+      else if (v === 'dashboard') location.replace('Dashboard.html');
+    })();
+  </script>
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">Legal Services</span>
+        <h1>All NyayaDheesh Services</h1>
+        <p>Select any of our six LegalTech service modules below.</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container">
+        <div class="grid-3" id="svcHub"></div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('services');
+    document.getElementById('svcHub').innerHTML = NDUI.SERVICES_MENU.map(s => `
+      <article class="card card-hover">
+        <div style="width:42px;height:42px;border-radius:10px;background:var(--gold-soft);color:var(--navy);display:flex;align-items:center;justify-content:center;margin-bottom:14px;">${ndIcon(s.icon, 20)}</div>
+        <h3>${NDUI.esc(s.title)}</h3>
+        <p class="text-sm">${NDUI.esc(s.desc)}</p>
+        <a href="${s.href}" class="btn btn-outline btn-sm">Open Service ${ndIcon('arrow-right', 14)}</a>
+      </article>
+    `).join('');
+  </script>
+</body>
+</html>

@@ -1,339 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mediation Experts | Nyayadheesh</title>
-    <style>
-        /* Earthy Color Palette */
-        :root {
-            --bg-dark: #121210;
-            --bg-darker: #0a0a08;
-            --text-primary: #f0f0e0;
-            --text-secondary: #b0b0a0;
-            --accent-1: #D4A373; /* Earthy tan */
-            --accent-2: #CCD5AE; /* Soft green */
-            --accent-3: #E9EDC9; /* Light sage */
-            --accent-4: #FAEDCD; /* Warm vanilla */
-            --border: rgba(212, 163, 115, 0.3);
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        header {
-            text-align: center;
-            padding: 40px 0;
-            background: linear-gradient(to right, var(--bg-dark), var(--bg-darker), var(--bg-dark));
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        h1 {
-            background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: var(--accent-3);
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-        
-        .mediator-card {
-            background-color: var(--bg-darker);
-            border-left: 5px solid var(--accent-1);
-            margin-bottom: 30px;
-            padding: 25px;
-            display: flex;
-            align-items: center;
-            border-radius: 0 8px 8px 0;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .mediator-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(212, 163, 115, 0.2);
-        }
-        
-        .mediator-photo {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 30px;
-            border: 3px solid var(--accent-1);
-        }
-        
-        .mediator-info {
-            flex: 1;
-        }
-        
-        .mediator-name {
-            color: var(--accent-1);
-            font-size: 1.8em;
-            margin: 0 0 10px 0;
-        }
-        
-        .specialty {
-            color: var(--accent-3);
-            font-style: italic;
-            margin-bottom: 10px;
-        }
-        
-        .stats {
-            display: flex;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .stat-item {
-            margin-right: 30px;
-        }
-        
-        .stat-value {
-            color: var(--accent-1);
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-        
-        .contact-btn {
-            position: absolute;
-            right: 25px;
-            bottom: 25px;
-            background: transparent;
-            color: var(--accent-1);
-            border: 2px solid var(--accent-1);
-            padding: 8px 20px;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .contact-btn:hover {
-            background: linear-gradient(to right, var(--accent-1), var(--accent-2));
-            color: var(--bg-dark);
-            border-color: transparent;
-        }
-        
-        .signup-btn {
-            display: inline-block;
-            background-color: transparent;
-            color: var(--accent-1);
-            border: 2px solid var(--accent-1);
-            padding: 10px 25px;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .signup-btn:hover {
-            background: linear-gradient(to right, var(--accent-1), var(--accent-2));
-            color: var(--bg-dark);
-            box-shadow: 0 0 10px rgba(212, 163, 115, 0.7);
-            transform: translateY(-2px);
-        }
-        
-        .signup-section {
-            text-align: center;
-            padding: 40px 0;
-            margin-top: 50px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .signup-text {
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            color: var(--text-secondary);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .mediator-card {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .mediator-photo {
-                margin-right: 0;
-                margin-bottom: 20px;
-            }
-            
-            .contact-btn {
-                position: static;
-                margin-top: 20px;
-            }
-            
-            .stats {
-                justify-content: center;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mediation Hub — NyayaDheesh</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <style>
+    .med-avatar {
+      width: 54px; height: 54px; border-radius: 50%;
+      object-fit: cover;
+      background: var(--navy); color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 16px; flex-shrink: 0;
+      border: 2px solid rgba(197, 164, 109, 0.45);
+    }
+    .stage-track {
+      display: flex;
+      gap: 4px;
+      margin-top: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .stage-pill {
+      flex: 1;
+      min-width: 90px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 6px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-muted);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .stage-pill.done { background: var(--success-bg); color: var(--success); border-color: #BBF7D0; }
+    .stage-pill.current { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Meet Our Mediation Experts</h1>
-            <p class="subtitle">These are verified mediators expert in fair and rapid out-of-the-court case settlement</p>
-        </header>
-        
-        <!-- Mediator 1 -->
-        <div class="mediator-card">
-            <img src="Images/Mediators (5).png" alt="Advocate Ramesh Kumar" class="mediator-photo">
-            <div class="mediator-info">
-                <h2 class="mediator-name">Advocate Ramesh Kumar</h2>
-                <p class="specialty">Specialist in Family Dispute Resolution and Property Mediation</p>
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-value">250+</span> cases resolved
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">12</span> years experience
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">92%</span> success rate
-                    </div>
-                </div>
-                <p>Former district court advocate with specialization in amicable dispute resolution.</p>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div id="bc"></div>
+        <span class="eyebrow">Alternative Dispute Resolution</span>
+        <h1>Structured Mediation &amp; Collaborative Settlement</h1>
+        <p>Explore how mediation works, browse 25 certified mediators across dispute categories, submit a guided mediation request, and track every stage live.</p>
+        <div class="flex gap-3 flex-wrap mt-4">
+          <a href="#request-wizard" class="btn btn-primary">Start Mediation Request</a>
+          <a href="#mediator-directory" class="btn btn-outline">Browse 25 Mediators</a>
+          <a href="#status-tracker" class="btn btn-ghost">Track Active Requests</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- What Mediation Is & How It Works -->
+    <section class="section">
+      <div class="container">
+        <div class="grid-2" style="margin-bottom:36px;">
+          <div class="card">
+            <span class="eyebrow">Overview</span>
+            <h2>What Is Mediation?</h2>
+            <p>
+              Mediation is a voluntary, private dispute-resolution process where an impartial third-party mediator helps disputing parties discuss interests openly and explore mutually acceptable written settlements—without handing decision-making control to an adversarial courtroom verdict.
+            </p>
+            <div style="display:grid;gap:8px;font-size:14px;color:var(--text-primary);" id="medBenefits"></div>
+          </div>
+
+          <div class="card">
+            <span class="eyebrow">Suitable Categories</span>
+            <h2>Common Matters Explored in Mediation</h2>
+            <p class="text-sm">Mediation is commonly suited to non-violent civil, commercial, family, and workplace disagreements where both parties wish to negotiate constructively:</p>
+            <div class="flex gap-2 flex-wrap mt-4" id="catTags"></div>
+          </div>
+        </div>
+
+        <div class="section-heading center">
+          <span class="eyebrow">Process</span>
+          <h2>How Mediation Works</h2>
+        </div>
+        <div class="grid-4">
+          <div class="card"><h4>1. Submit Request</h4><p class="text-sm mb-0">Share the dispute category, context, and preferred availability.</p></div>
+          <div class="card"><h4>2. Review &amp; Pairing</h4><p class="text-sm mb-0">A neutral mediator matching the dispute domain and language is assigned.</p></div>
+          <div class="card"><h4>3. Facilitated Dialogue</h4><p class="text-sm mb-0">Parties engage in confidential joint or separate sessions to explore options.</p></div>
+          <div class="card"><h4>4. Written Settlement</h4><p class="text-sm mb-0">If both sides agree, settlement terms are recorded clearly for legal review.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Multi-Step Mediation Request Wizard -->
+    <section class="section section-white" id="request-wizard">
+      <div class="container" style="max-width:920px;">
+        <div class="section-heading">
+          <span class="eyebrow">Guided Intake</span>
+          <h2>Submit a Mediation Request</h2>
+          <p>Complete the guided steps below. Your submitted request immediately appears in both the tracker below and your Client Dashboard.</p>
+        </div>
+        <div id="medStepper"></div>
+        <div class="card" id="medWizardHost"></div>
+      </div>
+    </section>
+
+    <!-- Live 7-Stage Status Tracker -->
+    <section class="section" id="status-tracker">
+      <div class="container">
+        <div class="flex justify-between items-center flex-wrap gap-3 mb-6">
+          <div class="section-heading" style="margin-bottom:0;">
+            <span class="eyebrow">Live Tracking</span>
+            <h2>Mediation Status Tracker</h2>
+            <p>Follow requests across all 7 stages: Submitted, Under Review, Mediator Assigned, Session Scheduled, In Progress, Resolved, and Closed.</p>
+          </div>
+          <a href="Dashboard.html#mediations" class="btn btn-outline btn-sm">View in Dashboard</a>
+        </div>
+        <div id="requestsList" style="display:grid;gap:16px;"></div>
+      </div>
+    </section>
+
+    <!-- 25 Mediator Directory -->
+    <section class="section section-white" id="mediator-directory">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Mediator Directory</span>
+          <h2>Browse 25 Certified Mediators</h2>
+          <p>Filter neutral mediators by dispute specialization, city, and spoken languages.</p>
+        </div>
+        <div class="flex gap-3 flex-wrap mb-6">
+          <div class="input-with-icon" style="flex:1;min-width:220px;">
+            <span class="input-icon" id="medSearchIcon"></span>
+            <input class="form-control" id="medSearch" placeholder="Search mediators by name, specialty, city, or language...">
+          </div>
+          <select class="form-select" id="medCatFilter" style="width:auto;min-width:200px;"><option value="">All Categories</option></select>
+          <select class="form-select" id="medCityFilter" style="width:auto;min-width:160px;"><option value="">All Cities</option></select>
+        </div>
+        <div class="grid-3" id="mediatorGrid"></div>
+        <div id="medPagination"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/data-seed.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    NDUI.initShell('mediation');
+    document.getElementById('bc').innerHTML = NDUI.renderBreadcrumbs([{ label: 'Home', href: 'index.html' }, { label: 'Mediation' }]);
+    document.getElementById('medSearchIcon').innerHTML = ndIcon('search', 16);
+
+    const MED_CATEGORIES = ['Family & Matrimonial', 'Property & Tenancy', 'Commercial & Business', 'Employment & Workplace', 'Consumer & Housing', 'Partnership & Equity', 'Contract & Vendor', 'Civil & Community'];
+    document.getElementById('catTags').innerHTML = MED_CATEGORIES.map(c => `<span class="badge badge-navy" style="padding:6px 12px;">${NDUI.esc(c)}</span>`).join('');
+    document.getElementById('medBenefits').innerHTML = [
+      'Confidential, private sessions focused on practical problem-solving',
+      'Voluntary participation — parties retain control over whether to settle',
+      'Helps preserve family, tenancy, employment, or business relationships',
+      'Flexible settlement terms tailored to real-world needs'
+    ].map(b => `<span style="display:flex;align-items:center;gap:8px;">${ndIcon('check-circle', 16)} ${NDUI.esc(b)}</span>`).join('');
+
+    const medCatSel = document.getElementById('medCatFilter');
+    medCatSel.innerHTML = '<option value="">All Categories</option>' + MED_CATEGORIES.map(c => `<option value="${NDUI.esc(c)}">${NDUI.esc(c)}</option>`).join('');
+    const medCitySel = document.getElementById('medCityFilter');
+    medCitySel.innerHTML = '<option value="">All Cities</option>' + NDSeed.CITIES.map(c => `<option value="${NDUI.esc(c.name)}">${NDUI.esc(c.name)}</option>`).join('');
+
+    // Multi-step Mediation Request Wizard
+    const WSTEPS = ['Category', 'Dispute Details', 'Mediator', 'Availability', 'Submit'];
+    const allMeds = NDStore.MediationService.listMediators();
+    const mw = {
+      step: 0,
+      category: 'Property & Tenancy',
+      title: '',
+      description: '',
+      otherParty: '',
+      mediatorId: allMeds[0].id,
+      preferredDate: NDSeed.isoDay(3),
+      preferredSlot: '11:00',
+      mode: 'Online Video'
+    };
+
+    function renderMedWizard() {
+      document.getElementById('medStepper').innerHTML = NDUI.renderStepper(WSTEPS, mw.step);
+      const host = document.getElementById('medWizardHost');
+
+      if (mw.step === 0) {
+        host.innerHTML = `
+          <h3>Step 1: Select Dispute Category</h3>
+          <div class="grid-2 mt-4 mb-4" style="gap:10px;">
+            ${MED_CATEGORIES.map(c => `
+              <button type="button" class="btn ${mw.category === c ? 'btn-primary' : 'btn-outline'}" style="justify-content:flex-start;" data-mcat="${NDUI.esc(c)}">
+                ${ndIcon('handshake', 15)} ${NDUI.esc(c)}
+              </button>
+            `).join('')}
+          </div>
+          <div style="text-align:right;"><button type="button" class="btn btn-primary" id="mwNext0">Continue ${ndIcon('arrow-right', 15)}</button></div>
+        `;
+        host.querySelectorAll('[data-mcat]').forEach(b => b.onclick = () => { mw.category = b.dataset.mcat; renderMedWizard(); });
+        document.getElementById('mwNext0').onclick = () => { mw.step = 1; renderMedWizard(); };
+        return;
+      }
+
+      if (mw.step === 1) {
+        host.innerHTML = `
+          <h3>Step 2: Describe Dispute &amp; Relevant Details</h3>
+          <div class="form-group mt-4">
+            <label class="form-label">Short Title <span class="req">*</span></label>
+            <input class="form-control" id="mwTitle" value="${NDUI.esc(mw.title)}" placeholder="e.g. Security deposit settlement after flat handover">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Other Party Involved</label>
+            <input class="form-control" id="mwParty" value="${NDUI.esc(mw.otherParty)}" placeholder="e.g. Landlord / Vendor / Co-Owner">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Dispute Summary &amp; Desired Outcome <span class="req">*</span></label>
+            <textarea class="form-textarea" id="mwDesc" placeholder="Outline what happened and what fair outcome you hope to explore in mediation...">${NDUI.esc(mw.description)}</textarea>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm mb-4" id="mwFill">Fill Sample Dispute Details</button>
+          <div class="flex justify-between">
+            <button type="button" class="btn btn-outline" id="mwBack1">Back</button>
+            <button type="button" class="btn btn-primary" id="mwNext1">Select Mediator ${ndIcon('arrow-right', 15)}</button>
+          </div>
+        `;
+        document.getElementById('mwFill').onclick = () => {
+          mw.title = `${mw.category} — Structured Settlement Request`;
+          mw.otherParty = 'Counterparty';
+          mw.description = `Seeking a neutral facilitated mediation session for a ${mw.category.toLowerCase()} matter to clarify mutual obligations and explore an amicable written resolution.`;
+          renderMedWizard();
+        };
+        document.getElementById('mwBack1').onclick = () => { mw.step = 0; renderMedWizard(); };
+        document.getElementById('mwNext1').onclick = () => {
+          mw.title = document.getElementById('mwTitle').value.trim();
+          mw.otherParty = document.getElementById('mwParty').value.trim();
+          mw.description = document.getElementById('mwDesc').value.trim();
+          if (mw.title.length < 4) { NDUI.toast('Please enter a short title (4+ characters).', 'error'); return; }
+          if (mw.description.length < 15) { NDUI.toast('Please describe the dispute in at least 15 characters.', 'error'); return; }
+          mw.step = 2; renderMedWizard();
+        };
+        return;
+      }
+
+      if (mw.step === 2) {
+        const matching = allMeds.filter(m => m.categories.includes(mw.category));
+        const pool = matching.length ? matching : allMeds.slice(0, 8);
+        if (!pool.some(m => m.id === mw.mediatorId)) mw.mediatorId = pool[0].id;
+
+        host.innerHTML = `
+          <h3>Step 3: Select Preferred Mediator (${NDUI.esc(mw.category)})</h3>
+          <div style="display:grid;gap:10px;max-height:320px;overflow-y:auto;margin:14px 0 18px;">
+            ${pool.map(m => `
+              <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid ${m.id === mw.mediatorId ? 'var(--navy)' : 'var(--border)'};background:${m.id === mw.mediatorId ? 'var(--gold-soft)' : 'var(--surface)'};border-radius:10px;cursor:pointer;">
+                <span style="display:flex;align-items:center;gap:10px;">
+                  <input type="radio" name="mwMed" value="${NDUI.esc(m.id)}" ${m.id === mw.mediatorId ? 'checked' : ''}>
+                  <span>
+                    <strong style="display:block;color:var(--navy);">${NDUI.esc(m.name)}</strong>
+                    <span class="text-xs text-muted">${NDUI.esc(m.specialty)} · ${NDUI.esc(m.city)} · ${NDUI.esc(m.languages.join(', '))}</span>
+                  </span>
+                </span>
+                <span class="badge badge-demo">Verified</span>
+              </label>
+            `).join('')}
+          </div>
+          <div class="flex justify-between">
+            <button type="button" class="btn btn-outline" id="mwBack2">Back</button>
+            <button type="button" class="btn btn-primary" id="mwNext2">Choose Availability ${ndIcon('arrow-right', 15)}</button>
+          </div>
+        `;
+        host.querySelectorAll('input[name="mwMed"]').forEach(r => r.onchange = () => { mw.mediatorId = r.value; renderMedWizard(); });
+        document.getElementById('mwBack2').onclick = () => { mw.step = 1; renderMedWizard(); };
+        document.getElementById('mwNext2').onclick = () => { mw.step = 3; renderMedWizard(); };
+        return;
+      }
+
+      if (mw.step === 3) {
+        host.innerHTML = `
+          <h3>Step 4: Select Preferred Availability</h3>
+          <div class="grid-3 mt-4 mb-4">
+            <div class="form-group">
+              <label class="form-label">Preferred Date</label>
+              <input class="form-control" type="date" id="mwDate" value="${NDUI.esc(mw.preferredDate)}" min="${NDSeed.isoDay(1)}">
             </div>
-            <button class="contact-btn">CONNECT</button>
-        </div>
-        
-        <!-- Mediator 2 -->
-        <div class="mediator-card">
-            <img src="Images/Mediators (2).png" alt="Dr. Priya Sharma" class="mediator-photo">
-            <div class="mediator-info">
-                <h2 class="mediator-name">Dr. Priya Sharma</h2>
-                <p class="specialty">Specialist in Medical Negligence and Healthcare Disputes</p>
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-value">180+</span> cases resolved
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">8</span> years experience
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">88%</span> success rate
-                    </div>
-                </div>
-                <p>MBBS with LLB, brings unique medical-legal perspective to mediation. Trained at International Mediation Institute.</p>
+            <div class="form-group">
+              <label class="form-label">Preferred Slot (IST)</label>
+              <select class="form-select" id="mwSlot">
+                ${['10:00', '11:30', '14:00', '16:00'].map(s => `<option value="${s}" ${mw.preferredSlot === s ? 'selected' : ''}>${s} IST</option>`).join('')}
+              </select>
             </div>
-            <button class="contact-btn">CONNECT</button>
-        </div>
-        
-        <!-- Mediator 3 -->
-        <div class="mediator-card">
-            <img src="Images/Mediators (1).png" alt="Col. Rajesh Verma (Retd.)" class="mediator-photo">
-            <div class="mediator-info">
-                <h2 class="mediator-name">Col. Rajesh Verma (Retd.)</h2>
-                <p class="specialty">Specialist in Defense and Government Contract Disputes</p>
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-value">320+</span> cases resolved
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">15</span> years experience
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">95%</span> success rate
-                    </div>
-                </div>
-                <p>30 years defense service experience brings discipline and structure to mediation process.</p>
+            <div class="form-group">
+              <label class="form-label">Session Mode</label>
+              <select class="form-select" id="mwMode">
+                ${['Online Video', 'In-Person', 'Phone Intake'].map(m => `<option value="${m}" ${mw.mode === m ? 'selected' : ''}>${m}</option>`).join('')}
+              </select>
             </div>
-            <button class="contact-btn">CONNECT</button>
+          </div>
+          <div class="flex justify-between">
+            <button type="button" class="btn btn-outline" id="mwBack3">Back</button>
+            <button type="button" class="btn btn-primary" id="mwNext3">Review Request ${ndIcon('arrow-right', 15)}</button>
+          </div>
+        `;
+        document.getElementById('mwBack3').onclick = () => { mw.step = 2; renderMedWizard(); };
+        document.getElementById('mwNext3').onclick = () => {
+          mw.preferredDate = document.getElementById('mwDate').value;
+          mw.preferredSlot = document.getElementById('mwSlot').value;
+          mw.mode = document.getElementById('mwMode').value;
+          mw.step = 4; renderMedWizard();
+        };
+        return;
+      }
+
+      const selMed = allMeds.find(m => m.id === mw.mediatorId) || allMeds[0];
+      host.innerHTML = `
+        <h3>Step 5: Review &amp; Submit Mediation Request</h3>
+        <div class="mt-4 mb-4" style="display:grid;gap:8px;font-size:14px;">
+          <div><strong>Category:</strong> ${NDUI.esc(mw.category)}</div>
+          <div><strong>Title:</strong> ${NDUI.esc(mw.title)}</div>
+          <div><strong>Other Party:</strong> ${NDUI.esc(mw.otherParty || 'Counterparty')}</div>
+          <div><strong>Preferred Mediator:</strong> ${NDUI.esc(selMed.name)} (${NDUI.esc(selMed.city)})</div>
+          <div><strong>Preferred Availability:</strong> ${NDUI.esc(mw.preferredDate)} at ${NDUI.esc(mw.preferredSlot)} IST (${NDUI.esc(mw.mode)})</div>
+          <div style="background:var(--ivory);padding:12px;border-radius:8px;border:1px solid var(--border);">${NDUI.esc(mw.description)}</div>
         </div>
-        
-        <!-- Mediator 4 -->
-        <div class="mediator-card">
-            <img src="Images/Mediators (3).png" alt="Ms. Ananya Desai" class="mediator-photo">
-            <div class="mediator-info">
-                <h2 class="mediator-name">Ms. Ananya Desai</h2>
-                <p class="specialty">Specialist in Corporate and Commercial Disputes</p>
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-value">400+</span> cases resolved
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">10</span> years experience
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">90%</span> success rate
-                    </div>
+        <div class="flex justify-between">
+          <button type="button" class="btn btn-outline" id="mwBack4">Back</button>
+          <button type="button" class="btn btn-gold" id="mwSubmitBtn">${ndIcon('check-circle', 16)} Submit Request</button>
+        </div>
+      `;
+      document.getElementById('mwBack4').onclick = () => { mw.step = 3; renderMedWizard(); };
+      document.getElementById('mwSubmitBtn').onclick = () => {
+        try {
+          const req = NDStore.MediationService.submitRequest(mw);
+          NDUI.toast(`Mediation request submitted (${req.id})!`, 'success');
+          mw.step = 0; mw.title = ''; mw.description = ''; mw.otherParty = '';
+          renderMedWizard();
+          renderRequests();
+          document.getElementById('status-tracker').scrollIntoView({ behavior: 'smooth' });
+        } catch (err) { NDUI.toast(err.message, 'error'); }
+      };
+    }
+
+    // Status tracker
+    function renderRequests() {
+      const reqs = NDStore.MediationService.listRequests();
+      const stages = NDSeed.MEDIATION_STAGES;
+      document.getElementById('requestsList').innerHTML = reqs.map(r => {
+        const curIdx = stages.indexOf(r.status);
+        return `
+          <article class="card">
+            <div class="flex justify-between items-center flex-wrap gap-2">
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <strong style="color:var(--navy);font-size:15.5px;">${NDUI.esc(r.title)}</strong>
+                  <span class="badge badge-navy">${NDUI.esc(r.id)}</span>
+                  ${NDUI.statusBadge(r.status)}
                 </div>
-                <p>Harvard-trained negotiator with experience in multinational corporations. Focuses on preserving business relationships.</p>
-            </div>
-            <button class="contact-btn">CONNECT</button>
-        </div>
-        
-        <!-- Mediator 5 -->
-        <div class="mediator-card">
-            <img src="Images/Mediators (4).png" alt="Prof. Arun Khanna" class="mediator-photo">
-            <div class="mediator-info">
-                <h2 class="mediator-name">Prof. Arun Khanna</h2>
-                <p class="specialty">Specialist in Educational Institution Disputes</p>
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-value">150+</span> cases resolved
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">7</span> years experience
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">85%</span> success rate
-                    </div>
+                <div class="text-xs text-muted mt-2">
+                  ${NDUI.esc(r.category)} · Mediator: ${NDUI.esc(r.mediatorName)} · Preferred: ${NDUI.esc(r.preferredDate)} ${NDUI.esc(r.preferredSlot)} IST (${NDUI.esc(r.mode)})
                 </div>
-                <p>Former university dean with deep understanding of academic disputes and student-faculty conflicts.</p>
+              </div>
+              ${curIdx < stages.length - 1 ? `
+                <button type="button" class="btn btn-outline btn-sm" data-adv="${NDUI.esc(r.id)}">
+                  Advance Stage ${ndIcon('arrow-right', 14)}
+                </button>
+              ` : `<span class="text-xs text-muted">Workflow Completed</span>`}
             </div>
-            <button class="contact-btn">CONNECT</button>
-        </div>
-        
-        <!-- Mediator 6 -->
-        <div class="mediator-card">
-            <img src="Images/Mediators (6).png" alt="Advocate Sneha Reddy" class="mediator-photo">
-            <div class="mediator-info">
-                <h2 class="mediator-name">Advocate Sneha Reddy</h2>
-                <p class="specialty">Specialist in Labor and Employment Disputes</p>
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-value">275+</span> cases resolved
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">9</span> years experience
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">91%</span> success rate
-                    </div>
-                </div>
-                <p>Worked with both management and unions to find balanced solutions. Certified by International Labour Organization.</p>
+            <p class="text-sm mt-2 mb-0">${NDUI.esc(r.description)}</p>
+            <div class="stage-track" aria-label="Mediation progress stages">
+              ${stages.map((st, idx) => `<div class="stage-pill ${idx < curIdx ? 'done' : idx === curIdx ? 'current' : ''}">${NDUI.esc(st)}</div>`).join('')}
             </div>
-            <button class="contact-btn">CONNECT</button>
-        </div>
-        
-        <div class="signup-section">
-            <p class="signup-text">Want to join our team of certified mediators?</p>
-            <a href="/signup-mediator" class="signup-btn">SIGN UP AS A CERTIFIED MEDIATOR</a>
-        </div>
-    </div>
+          </article>
+        `;
+      }).join('');
+
+      document.querySelectorAll('[data-adv]').forEach(b => {
+        b.onclick = () => {
+          const updated = NDStore.MediationService.advanceDemoStatus(b.dataset.adv);
+          NDUI.toast(`Request ${updated.id} moved to "${updated.status}".`, 'success');
+          renderRequests();
+        };
+      });
+    }
+
+    // 25-Mediator Directory with pagination
+    let medPage = 1;
+    function renderMediators() {
+      const list = NDStore.MediationService.listMediators({
+        search: document.getElementById('medSearch').value,
+        category: medCatSel.value,
+        city: medCitySel.value
+      });
+      const perPage = 9;
+      const totalPages = Math.max(1, Math.ceil(list.length / perPage));
+      medPage = Math.min(medPage, totalPages);
+      const slice = list.slice((medPage - 1) * perPage, medPage * perPage);
+
+      const grid = document.getElementById('mediatorGrid');
+      if (!slice.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1;">${NDUI.renderEmptyState({ icon: 'users', title: 'No Mediators Found', description: 'Try clearing your search or category filter.' })}</div>`;
+        document.getElementById('medPagination').innerHTML = '';
+        return;
+      }
+
+      grid.innerHTML = slice.map(m => `
+        <article class="card card-hover" style="display:flex;flex-direction:column;">
+          <div class="flex justify-between items-center mb-3">
+            <span class="badge badge-demo">Certified Mediator</span>
+            <span class="badge badge-navy">${NDUI.esc(m.availability)}</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            ${m.photo
+              ? `<img src="${NDUI.esc(m.photo)}" alt="${NDUI.esc(m.name)}" class="med-avatar" loading="lazy">`
+              : `<div class="med-avatar">${NDUI.esc(m.initials)}</div>`}
+            <div>
+              <h3 style="margin:0 0 2px;font-size:1.1rem;">${NDUI.esc(m.name)}</h3>
+              <div class="text-xs" style="color:var(--gold-dark);font-weight:600;">${NDUI.esc(m.specialty)}</div>
+            </div>
+          </div>
+          <p class="text-sm mb-3">${NDUI.esc(m.bio)}</p>
+          <div class="text-xs text-muted mb-3" style="display:grid;gap:4px;">
+            <span>${ndIcon('map-pin', 13)} ${NDUI.esc(m.city)} · ${m.experience} years facilitation experience</span>
+            <span>${ndIcon('globe', 13)} ${NDUI.esc(m.languages.join(', '))}</span>
+          </div>
+          <div style="margin-top:auto;">
+            <button type="button" class="btn btn-outline btn-sm btn-block" data-pickmed="${NDUI.esc(m.id)}">Select for Mediation Request</button>
+          </div>
+        </article>
+      `).join('');
+
+      grid.querySelectorAll('[data-pickmed]').forEach(btn => {
+        btn.onclick = () => {
+          const med = allMeds.find(x => x.id === btn.dataset.pickmed);
+          if (med) {
+            mw.mediatorId = med.id;
+            mw.category = med.specialty;
+            mw.step = 1;
+            renderMedWizard();
+            document.getElementById('request-wizard').scrollIntoView({ behavior: 'smooth' });
+            NDUI.toast(`Selected ${med.name} — enter dispute details to continue.`, 'info');
+          }
+        };
+      });
+
+      const ph = document.getElementById('medPagination');
+      ph.innerHTML = NDUI.renderPagination({ page: medPage, totalPages });
+      ph.querySelectorAll('[data-page]').forEach(b => b.onclick = () => { medPage = Number(b.dataset.page); renderMediators(); });
+    }
+
+    document.getElementById('medSearch').oninput = () => { medPage = 1; renderMediators(); };
+    medCatSel.onchange = () => { medPage = 1; renderMediators(); };
+    medCitySel.onchange = () => { medPage = 1; renderMediators(); };
+
+    renderMedWizard();
+    renderRequests();
+    renderMediators();
+  </script>
 </body>
 </html>
