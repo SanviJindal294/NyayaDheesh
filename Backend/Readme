@@ -1,0 +1,5 @@
+Backend configuration
+=====================
+
+Set `GEOAPIFY_API_KEY` in `Backend/.env` to enable postcode geocoding.
+See `.env.example` for the required variable name.
